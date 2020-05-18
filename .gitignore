@@ -1,0 +1,9 @@
+# environment
+/.vscode
+
+# dependencies
+/node_modules
+
+# Dev Resources
+BP_Menu.md
+DevNotes.md

@@ -1,0 +1,57 @@
+{
+  "name": "gauntlet-bp-tracker-ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "tslint 'src/**/*.ts?(x)' || exit 0",
+    "lint:fix": "tslint 'src/**/*.ts?(x)' --fix",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^16.13.1",
+    "react-bootstrap": "^1.0.1",
+    "react-dom": "^16.13.1",
+    "react-fontawesome": "^1.7.1",
+    "react-router": "^5.1.2",
+    "react-router-bootstrap": "^0.25.0",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
+    "shortid": "^2.2.15",
+    "toastr": "^2.1.4",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.4",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
+    "@types/react-fontawesome": "^1.6.4",
+    "@types/react-router": "^5.1.7",
+    "@types/react-router-bootstrap": "^0.24.5",
+    "@types/react-router-dom": "^5.1.5",
+    "@types/shortid": "0.0.29",
+    "install": "^0.13.0",
+    "npm": "^6.14.5"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

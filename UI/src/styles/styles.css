@@ -1,0 +1,39 @@
+/* General Styles */
+
+.btn:disabled {
+  cursor: not-allowed;
+}
+
+/* View Character Page */
+.character-portrait {
+  width: 60px;
+  height: 60px;
+  margin-right: 15px;
+  z-index: 1;
+}
+
+.character-avatar {
+  width: 100%;
+  height: 100%;
+  border: 2px solid #4ab9db;
+  background-size: cover;
+}
+
+#character-history .accordion .card:first-of-type {
+  border-radius: 0;
+}
+
+#character-history .history-section-toggle, #character-history .encounter-header {
+  cursor: pointer;
+  font-weight: 400;
+  color: #fff;
+}
+
+#character-history .list-group-item:hover {
+  background-color: #32383e;
+}
+
+.custom-item-form button[type=submit] {
+  margin-right: 1.25rem;
+}
+

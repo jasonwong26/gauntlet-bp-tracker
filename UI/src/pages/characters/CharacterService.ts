@@ -1,5 +1,6 @@
 import { DataService } from "../../utility";
 import { Character } from "./View/_types";
+import { CharacterStorageService } from "./CharacterStorageService";
 
 export interface CharacterSummary {
   id: string,
@@ -11,9 +12,12 @@ export interface CharacterSummary {
 
 export class CharacterService {
   service: DataService;
+  remoteService: CharacterStorageService;
 
-  constructor (service: DataService) {
+  constructor (service: DataService, remoteService: CharacterStorageService) {
     this.service = service;
+    this.remoteService = remoteService;
+    this.remoteService.connect();
   }
 
   getListKey = () => {
@@ -44,8 +48,16 @@ export class CharacterService {
 
   public create = async (item: Character) => {
     const key = this.getStorageKey(item.id);
+    await this.trySaveRemote(item);
     await this.service.save(key, item);
     await this.appendToList(item);
+  }
+  trySaveRemote = async (item: Character) => {
+    try {
+      await this.remoteService.save(item);
+    } catch (error) {
+      console.log("an error occurred saving to the remote storage...", error);
+    }
   }
   appendToList = async (item: Character) => {
     const summary: CharacterSummary = {
@@ -67,6 +79,7 @@ export class CharacterService {
 
   public save = async (item: Character) => {
     const key = this.getStorageKey(item.id);
+    await this.trySaveRemote(item);
     await this.service.save(key, item);
   }
 

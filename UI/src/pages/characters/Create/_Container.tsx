@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { History } from "history";
 
 import {LocalStorageService } from "../../../utility";
 import { CharacterService } from "../CharacterService";
+import { CharacterStorageService } from "../CharacterStorageService";
 
 import { Character } from "../View/_types";
 import { NewCharacter } from "./_types";
@@ -20,18 +21,29 @@ enum SaveState {
   ERRORED = 3
 }
 
-const buildService = () => {
-  const storageService = new LocalStorageService();
-  const service = new CharacterService(storageService);
-
-  return service;
-};
-
 export const Container: React.FC<Props> = ({ history, children }) => {
-  const [service] = useState(buildService());
+  const [, setRemoteService] = useState<CharacterStorageService>();
+  const [service, setService] = useState<CharacterService>();
   const [saveState, setSaveState] = useState(SaveState.INACTIVE);
 
+  // Run onMount
+  useEffect(() => {
+    const local = new LocalStorageService();
+    const remote = new CharacterStorageService();
+    const svc = new CharacterService(local, remote);
+    setRemoteService(remote);
+    setService(svc);
+
+    // Cleanup method
+    return () => {
+      remote.disconnect();
+      setRemoteService(undefined);
+    }
+  }, []);
+
   const onCreate = (input: NewCharacter) => {
+    if (!service) throw new Error("service not initialized!");
+    
     setSaveState(SaveState.PENDING);
 
     const character: Character = {

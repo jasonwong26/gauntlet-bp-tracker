@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/jasonwong26/gauntlet-bp-tracker/issues"
   },
-  "homepage": "https://github.com/jasonwong26/gauntlet-bp-tracker#readme"
+  "homepage": "https://github.com/jasonwong26/gauntlet-bp-tracker#readme",
+  "dependencies": {}
 }

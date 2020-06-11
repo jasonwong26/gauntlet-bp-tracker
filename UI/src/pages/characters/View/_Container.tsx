@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import {LocalStorageService } from "../../../utility";
 import { CharacterService } from "../CharacterService";
+import { CharacterStorageService } from "../CharacterStorageService";
 import { Campaign, AppState, SetEncounter, OnPurchase, OnRemove } from "./_types";
 import { CharacterAppService, AppService } from "./AppService";
 
@@ -21,13 +22,6 @@ enum SaveState {
   SAVED = 2,
   ERRORED = 3
 }
-
-const buildService = () => {
-  const storageService = new LocalStorageService();
-  const service = new CharacterService(storageService);
-
-  return service;
-};
 
 const campaign: Campaign = {
   encounters: [
@@ -121,14 +115,29 @@ const campaign: Campaign = {
 };
 
 export const Container: React.FC<Props> = ({ id, children }) => {
-  const [service] = useState(buildService());
+  const [, setRemoteService] = useState<CharacterStorageService>();
+  const [service, setService] = useState<CharacterService>();
   const [appService, setAppService] = useState<AppService>();
   const [appState, setAppState] = useState<AppState>();
   const [saveState, setSaveState] = useState(SaveState.INACTIVE);
 
   // Run onMount
   useEffect(() => {
-    // console.log("container service effect called...");
+    const local = new LocalStorageService();
+    const remote = new CharacterStorageService();
+    const svc = new CharacterService(local, remote);
+    setRemoteService(remote);
+    setService(svc);
+
+    // Cleanup method
+    return () => {
+      remote.disconnect();
+      setRemoteService(undefined);
+    }
+  }, []);
+
+  useEffect(() => {
+    if(!service) return;
 
     service.fetch(id)
       .then(character => {
@@ -172,7 +181,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
   const saveCharacter = async () => {
     const character = appService.getCharacter();
     try {
-      await service.save(character);
+      await service!.save(character);
       setSaveState(SaveState.SAVED);
     } catch(error) {
       setSaveState(SaveState.ERRORED);

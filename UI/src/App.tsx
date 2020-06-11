@@ -8,6 +8,7 @@ import { Home } from "./pages/Home";
 
 import { CreateCampaign, ViewCampaign} from "./pages/campaign";
 import { CreatePage, ListPage, ViewPage } from "./pages/characters";
+import { ChatPage } from "./pages/chat/ChatPage";
 import { NotFound } from "./pages/errors";
 
 interface Props {
@@ -31,6 +32,9 @@ const App: React.FC<Props> = ({title, history}) => (
         <Route exact path="/character" component={ListPage} />
         <Route exact path="/character/create" component={CreatePage} />
         <Route exact path="/character/:id" component={ViewPage} />
+
+        {/* Chat Pages */}
+        <Route exact path="/chat" component={ChatPage} />
 
         {/* Errors */}
         <Route component={NotFound} />

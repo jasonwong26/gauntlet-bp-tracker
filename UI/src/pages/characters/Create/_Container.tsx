@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import shortid from "shortid";
 import { History } from "history";
 
 import {LocalStorageService } from "../../../utility";
@@ -7,7 +8,6 @@ import { CharacterStorageService } from "../CharacterStorageService";
 
 import { Character } from "../View/_types";
 import { NewCharacter } from "./_types";
-import shortid from "shortid";
 
 interface Props {
   history: History,
@@ -38,7 +38,7 @@ export const Container: React.FC<Props> = ({ history, children }) => {
     return () => {
       remote.disconnect();
       setRemoteService(undefined);
-    }
+    };
   }, []);
 
   const onCreate = (input: NewCharacter) => {

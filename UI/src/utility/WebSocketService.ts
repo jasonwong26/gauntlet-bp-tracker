@@ -14,7 +14,7 @@ interface MessageData {
   [key: string]: any
 }
 type ConnectHandler = (event?: Event) => any;
-type EventHandler = (input: { [key: string]: any }) => any;
+export type EventHandler = (input: { [key: string]: any }) => any;
 type DisconnectHandler = (event?: CloseEvent) => any;
 
 export class WebSocketService implements SocketService {
@@ -49,6 +49,7 @@ export class WebSocketService implements SocketService {
     const request: MessageData = JSON.parse(event.data);
     const { action, ...data } = request;
     const eventListeners = this.listeners.get(action);
+    console.log("event received...", {event, eventListeners});
     eventListeners?.map(el => el(data));
   }
   private awaitCriteria = async (predicate: () => boolean, delay: number = 500) => {
@@ -87,7 +88,7 @@ export class WebSocketService implements SocketService {
     this.listeners.set(event, filtered);
   }
 
-  public send: SocketService["send"] = async (input) => {
+  public send: SocketService["send"] = async input => {
     if(!this.connected) throw new Error("Socket not connected!");
     const body = JSON.stringify(input);
     this.socket!.send(body); 

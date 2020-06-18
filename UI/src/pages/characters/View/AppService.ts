@@ -5,7 +5,7 @@ type GetBalance = (history: HistoryTier[], activeEncounter: Encounter) => number
 
 export interface AppService {
   setEncounter: (encounter: Encounter) => void
-  onPurchase: (item: PurchaseItem) => void
+  onPurchase: (item: PurchaseItem) => PurchasedItem
   onRemove: (item: PurchasedItem) => void
   getState: () => AppState | undefined
   getCharacter: () => Character
@@ -68,6 +68,8 @@ export class CharacterAppService implements AppService {
       // console.log("inserting...", {purchasedItem, index, history: this.character.history});
       this.character.history.splice(index, 0, purchasedItem);  
     }
+
+    return purchasedItem;
   }
   public onRemove = (item: PurchasedItem) => {
     // console.log(`Removed item: ${item.description}`, item);

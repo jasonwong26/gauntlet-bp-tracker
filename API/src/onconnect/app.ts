@@ -52,7 +52,7 @@ export const mapToInput = (event: ConnectEvent) => {
     throw new ValidationError("missing required querystring parameter: 'campaign'");
   }
 
-  const input: Input = { action: "connect", campaign: campaign, connectionId, endPoint };
+  const input: Input = { action: "connect", campaign, connectionId, endPoint };
   return input;
 };
 const writeToDatabase: (input: Input) => Promise<void> = async input => {

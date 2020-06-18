@@ -104,7 +104,7 @@ const getOrCreateEntry: (input: Input) => Promise<DbCharacter> = async input => 
       type: "Character",
       typeSk: character.id,
       character
-    }
+    };
     return { ...props, ...keys };
   }
 

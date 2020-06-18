@@ -90,12 +90,96 @@ Resources:
       IntegrationUri: 
         Fn::Sub:
             arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SaveCharacterFunction.Arn}/invocations
+  GetCampaignRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: getcampaign
+      AuthorizationType: NONE
+      OperationName: GetCampaignRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref GetCampaignInteg
+  GetCampaignInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Get Campaign Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCampaignFunction.Arn}/invocations
+  GetCharacterRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: getcharacter
+      AuthorizationType: NONE
+      OperationName: GetCharacterRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref GetCharacterInteg
+  GetCharacterInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Get Character Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetCharacterFunction.Arn}/invocations
+  AddItemRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: additem
+      AuthorizationType: NONE
+      OperationName: AddItemRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref AddItemInteg
+  AddItemInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Purchase Item Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${AddItemFunction.Arn}/invocations
+  RemoveItemRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: removeitem
+      AuthorizationType: NONE
+      OperationName: RemoveItemRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref RemoveItemInteg
+  RemoveItemInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Purchase Item Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${RemoveItemFunction.Arn}/invocations
   Deployment:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
     - ConnectRoute
     - DisconnectRoute
     - SaveRoute
+    - GetCampaignRoute
+    - GetCharacterRoute
+    - AddItemRoute
+    - RemoveItemRoute
     Properties:
       ApiId: !Ref GauntletWebSocket
   Stage:
@@ -109,6 +193,7 @@ Resources:
       ApiId: !Ref GauntletWebSocket
   StorageTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
     Properties:
       AttributeDefinitions:
       - AttributeName: pk
@@ -211,20 +296,119 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref SaveCharacterFunction
       Principal: apigateway.amazonaws.com
-
+  GetCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getcampaign/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  GetCampaignPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetCampaignFunction
+      Principal: apigateway.amazonaws.com
+  GetCharacterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getcharacter/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  GetCharacterPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetCharacterFunction
+      Principal: apigateway.amazonaws.com
+  AddItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: additem/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  AddItemPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref AddItemFunction
+      Principal: apigateway.amazonaws.com
+  RemoveItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: removeitem/
+      Handler: app.handler
+      MemorySize: 256
+      Runtime: nodejs12.x
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  RemoveItemPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref RemoveItemFunction
+      Principal: apigateway.amazonaws.com
 
 Outputs:
   StorageTableArn:
     Description: "Storage table ARN"
     Value: !GetAtt StorageTable.Arn
-
-  OnConnectFunctionArn:
-    Description: "OnConnect function ARN"
-    Value: !GetAtt OnConnectFunction.Arn
-
-  OnDisconnectFunctionArn:
-    Description: "OnDisconnect function ARN"
-    Value: !GetAtt OnDisconnectFunction.Arn
 
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"

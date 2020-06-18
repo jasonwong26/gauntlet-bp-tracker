@@ -11,7 +11,8 @@
     "prebuild": "rm -rf lib/",
     "build": "tsc",
     "postbuild": "ts-node tools/buildTemplate.ts",
-    "predeploy": "npm run build"
+    "predeploy": "npm run build",
+    "deploy": "sh tools/deploy.sh"
   },
   "author": "",
   "license": "ISC",

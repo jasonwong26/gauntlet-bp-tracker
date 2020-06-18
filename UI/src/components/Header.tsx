@@ -24,17 +24,10 @@ export const Header: React.FC<Props> = ({title}) => (
           <LinkContainer exact to="/">
             <Nav.Link href="/">Home Page</Nav.Link>
           </LinkContainer>
-          
-          <LinkContainer exact to="/chat">
-            <Nav.Link href="/chat">Chat Page</Nav.Link>
-          </LinkContainer>
 
           <NavDropdown id="" title="Campaign Pages">
-            <LinkContainer exact to="/campaign/create">
-              <Nav.Link href="/campaign/create">Create Campaign</Nav.Link>
-            </LinkContainer>
-            <LinkContainer exact to="/campaign/737760">
-              <Nav.Link href="/character/737760">View Campaign</Nav.Link>
+          <LinkContainer exact to="/campaign/">
+              <Nav.Link href="/campaign/">View Campaigns</Nav.Link>
             </LinkContainer>
           </NavDropdown>
 

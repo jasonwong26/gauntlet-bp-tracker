@@ -1,14 +1,7 @@
 import { DataService } from "../../utility";
+import { CharacterSummary } from "./_types";
 import { Character } from "./View/_types";
 import { CharacterStorageService } from "./CharacterStorageService";
-
-export interface CharacterSummary {
-  id: string,
-  name: string,
-  avatarUrl?: string,
-  race: string,
-  class: string
-}
 
 export class CharacterService {
   service: DataService;

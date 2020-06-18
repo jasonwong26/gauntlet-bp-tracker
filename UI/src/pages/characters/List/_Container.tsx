@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 
+import { CharacterSummary } from "../_types";
 import {LocalStorageService } from "../../../utility";
-import { CharacterService, CharacterSummary } from "../CharacterService";
+import { CharacterService } from "../CharacterService";
 import { CharacterStorageService } from "../CharacterStorageService";
 
 interface Props {
@@ -25,7 +26,7 @@ export const Container: React.FC<Props> = ({ children }) => {
     return () => {
       remote.disconnect();
       setRemoteService(undefined);
-    }
+    };
   }, []);
 
   useEffect(() => {

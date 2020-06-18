@@ -1,29 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { Campaign } from "../pages/characters/View/_types";
 
-import {LocalStorageService } from "../../../utility";
-import { CharacterService } from "../CharacterService";
-import { CharacterStorageService } from "../CharacterStorageService";
-import { Campaign, AppState, SetEncounter, OnPurchase, OnRemove } from "./_types";
-import { CharacterAppService, AppService } from "./AppService";
-
-interface Props {
-  id: string
-  children: (saving: boolean,
-             app?: AppState, 
-             setEncounter?: SetEncounter, 
-             onPurchase?: OnPurchase, 
-             onRemove?: OnRemove) 
-    => React.ReactNode
-}
-
-enum SaveState {
-  INACTIVE = 0,
-  PENDING = 1,
-  SAVED = 2,
-  ERRORED = 3
-}
-
-const campaign: Campaign = {
+export const campaign: Campaign = {
   encounters: [
     { tier: 1, level: 1, points: 100 },
     { tier: 1, level: 2, points: 100 },
@@ -112,85 +89,4 @@ const campaign: Campaign = {
     { key: "ms8", description: "8th Level Spell", points: -800 },
     { key: "ms9", description: "9th Level Spell", points: -900 }
   ]
-};
-
-export const Container: React.FC<Props> = ({ id, children }) => {
-  const [, setRemoteService] = useState<CharacterStorageService>();
-  const [service, setService] = useState<CharacterService>();
-  const [appService, setAppService] = useState<AppService>();
-  const [appState, setAppState] = useState<AppState>();
-  const [saveState, setSaveState] = useState(SaveState.INACTIVE);
-
-  // Run onMount
-  useEffect(() => {
-    const local = new LocalStorageService();
-    const remote = new CharacterStorageService();
-    const svc = new CharacterService(local, remote);
-    setRemoteService(remote);
-    setService(svc);
-
-    // Cleanup method
-    return () => {
-      remote.disconnect();
-      setRemoteService(undefined);
-    };
-  }, []);
-
-  useEffect(() => {
-    if(!service) return;
-
-    service.fetch(id)
-      .then(character => {
-        if(!character) return;
-        const app = new CharacterAppService(campaign, character);
-        setAppService(app);    
-      });
-  }, [id, service]);
-
-  // Run on Props update
-  useEffect(() => {
-    // console.log("container state effect called...");
-    if(!appService) return;
-    const state = appService.getState();
-    setAppState(state);
-  }, [appService]);
-
-  if(!appService) {
-    return (
-      <div>Loading placeholder...</div>
-    );
-  }
-
-  const setEncounter: SetEncounter = encounter => {
-    appService.setEncounter(encounter);
-    const newState = appService.getState();
-    setAppState(newState);
-  };
-  const onPurchase: OnPurchase = item => {
-    appService.onPurchase(item);
-    const newState = appService.getState();
-    setAppState(newState);
-    saveCharacter(); 
-  };
-  const onRemove: OnRemove = item => {
-    appService.onRemove(item);
-    const newState = appService.getState();
-    setAppState(newState);    
-    saveCharacter(); 
-  };
-  const saveCharacter = async () => {
-    const character = appService.getCharacter();
-    try {
-      await service!.save(character);
-      setSaveState(SaveState.SAVED);
-    } catch(error) {
-      setSaveState(SaveState.ERRORED);
-    }
-  };
-  const saving = saveState === SaveState.PENDING;
-  return (
-    <React.Fragment>
-      { children(saving, appState, setEncounter, onPurchase, onRemove ) }
-    </React.Fragment>
-  );
 };

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Button, Card, Modal } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
-
-import { CharacterSummary } from "../CharacterService";
 import FontAwesome from "react-fontawesome";
+
+import { CharacterSummary } from "../_types";
 
 interface Props {
   characters: CharacterSummary[]

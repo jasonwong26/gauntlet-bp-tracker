@@ -3,7 +3,13 @@ import { Character } from "./View/_types";
 
 const action = "savecharacter";
 const campaign = 1;
-const endpoint = `wss://omaoyndy1g.execute-api.us-west-2.amazonaws.com/Dev/?campaign=${campaign}`;
+const apiHost = process.env.REACT_APP_API_HOST!;
+
+const getEndpoint = (id: string | number) => {
+  return `wss://${apiHost}?campaign=${id}`;
+};
+
+const endpoint = getEndpoint(campaign);
 
 export class CharacterStorageService {
   service: SocketService;
@@ -20,10 +26,8 @@ export class CharacterStorageService {
   }
 
   public connect = async () => {
-    await this.service.onConnect(async () => {
-    });
     await this.service.connect();  
-  };
+  }
 
   public save = async (character: Character) => {
     const input = { action, campaign, character };

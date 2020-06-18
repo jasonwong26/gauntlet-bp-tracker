@@ -29,3 +29,58 @@ export interface Response {
   statusCode: number 
   body: string 
 }
+
+export interface Campaign {
+  id: string,
+  title: string,
+  author: string,
+  description: string
+  authorEmail: string,
+  characters: CharacterSummary[]
+}
+export interface CharacterSummary {
+  id: string,
+  name: string,
+  avatarUrl?: string,
+  race: string,
+  class: string
+}
+export interface Character extends CharacterSummary {
+  history: PurchasedItem[],
+  [key: string]: any
+}
+
+interface DbRecord {
+  pk: string,
+  sk: string,
+}
+interface DbTypeRecord extends DbRecord {
+  type: string,
+  typeSk: string
+}
+export interface DbCampaign extends DbRecord {
+  campaign: Campaign
+}
+// TODO: refactor to use this
+export interface DbCharacter extends DbTypeRecord {
+  character: Character
+}
+
+export interface PurchasedItem {
+  id: string,
+  key: string,
+  description: string
+  level: number,
+  tier: number,
+  points: number
+  purchaseDate: number
+}
+
+interface BaseAlert {
+  action: string,
+}
+export interface PurchaseAlert extends BaseAlert {
+  action: string,
+  character: CharacterSummary,
+  item: PurchasedItem
+}

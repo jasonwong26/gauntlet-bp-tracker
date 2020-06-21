@@ -17,33 +17,50 @@ type ConnectHandler = (event?: Event) => any;
 export type EventHandler = (input: { [key: string]: any }) => any;
 type DisconnectHandler = (event?: CloseEvent) => any;
 
+enum SocketState {
+  CONNECTING = 0, //	Socket has been created. The connection is not yet open.
+  OPEN = 1,       // The connection is open and ready to communicate.
+  CLOSING = 2,    //	The connection is in the process of closing.
+  CLOSED = 3      // The connection is closed or couldn't be opened.
+}
+
+interface Options {
+  maxRetries: number
+}
+
+const defaultOptions: Options = {
+  maxRetries: 5
+}
+
 export class WebSocketService implements SocketService {
   uri: string;
+  options: Options;
   listeners: Map<string, EventHandler[]>;
-  connected: boolean = false;
 
   socket: WebSocket | undefined;
   connectHandler: ConnectHandler | undefined;
   disconnectHandler: DisconnectHandler | undefined;
 
-  constructor(uri: string) {
+  constructor(uri: string, options: Options = defaultOptions) {
     this.uri = uri;
+    this.options = options;
     this.listeners = new Map<string, EventHandler[]>();
   }
 
-  public isConnected = () => this.connected;
+  public isConnected = () => {
+    return !!this.socket && this.socket.readyState === SocketState.OPEN;
+  };
 
   public connect: SocketService["connect"] = async () => {
     this.socket = new WebSocket(this.uri);
-    this.socket.onopen =event => {
-      this.connected = true;
+    this.socket.onopen = event => {
       if(!!this.connectHandler) {
         this.connectHandler(event);
       }
     };
     this.socket.onmessage = this.eventListener;
 
-    await this.awaitCriteria(() => this.connected);
+    await this.awaitCriteria(() => this.isConnected());
   }
   private eventListener: (event: MessageEvent) => void = event => {
     const request: MessageData = JSON.parse(event.data);
@@ -89,23 +106,39 @@ export class WebSocketService implements SocketService {
   }
 
   public send: SocketService["send"] = async input => {
-    if(!this.connected) throw new Error("Socket not connected!");
+    if(!this.isConnected()) {
+      await this.reconnect();
+    }
     const body = JSON.stringify(input);
     this.socket!.send(body); 
+  }
+  private reconnect = async () => {
+    const maxTries = this.options.maxRetries;
+    for (let i = 0; i < maxTries; i++) {
+      try {
+        if(this.isConnected()) return;
+
+        console.log("reconnecting...")
+        await this.connect();
+      } catch(error) {
+        console.log("unable to reconnect...", { error })
+      }  
+    }
+
+    throw new Error("max retries reached.  Unable to reconnect.");
   }
 
   public disconnect: SocketService["disconnect"] = async () => {
     if(!this.socket) return;
 
     this.socket.onclose =event => {
-      this.connected = false;
       if(!!this.disconnectHandler) {
         this.disconnectHandler(event);
       }
     };
     this.socket.close();
 
-    await this.awaitCriteria(() => !this.connected);
+    await this.awaitCriteria(() => !this.isConnected());
   }
   public onDisconnect: SocketService["onDisconnect"] = async handler => {
     this.disconnectHandler = handler;

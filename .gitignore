@@ -1,4 +1,5 @@
 # environment
+ .DS_Store
 /.vscode
 /ui/.env.local
 /api/.env.local

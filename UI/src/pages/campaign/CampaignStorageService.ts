@@ -137,6 +137,10 @@ export class CampaignStorageService {
 
 
   public disconnect = async () => {
+    this.service.onDisconnect(event => {
+      console.log("...disconnected.", { event });
+    });
+
     console.log("disconnecting...");
     await this.service.disconnect();
   }

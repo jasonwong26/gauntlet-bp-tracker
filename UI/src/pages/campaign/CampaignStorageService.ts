@@ -1,5 +1,5 @@
 import { EventHandler, SocketService, WebSocketService } from "../../utility";
-import { Campaign, PurchaseAlert } from "./_types";
+import { Campaign, PurchaseAlert, CampaignSettings } from "./_types";
 import { Character, PurchasedItem } from "../characters/View/_types";
 import { Notification } from "../../components/Toast";
 
@@ -7,6 +7,7 @@ type GetHandler<T> = (input: T) => void;
 
 const actions = {
   getCampaign: "getcampaign",
+  getSettings: "getcampaignsettings",
   getCharacter: "getcharacter",
   addItem: "additem",
   removeItem: "removeitem"
@@ -80,6 +81,23 @@ export class CampaignStorageService {
     await this.service.subscribe(actions.getCampaign, eventHook);
 
     const input = { action: actions.getCampaign, campaign: this.id };
+    console.log("issuing get...", input);
+    await this.service.send(input);
+  }
+
+  public getSettings = async (handler: GetHandler<CampaignSettings>) => {
+    const eventHook: EventHandler = event => {
+      console.log("getSettings...", event);
+      const { settings } = event;
+      console.log("...settings retrieved", settings);
+      handler(settings);
+      console.log("...unsubscribing to event...");
+      this.service.unsubscribe(actions.getSettings, eventHook);
+    };
+    console.log("subscribing to event...");
+    await this.service.subscribe(actions.getSettings, eventHook);
+
+    const input = { action: actions.getSettings, campaign: this.id };
     console.log("issuing get...", input);
     await this.service.send(input);
   }

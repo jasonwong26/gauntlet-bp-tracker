@@ -23,7 +23,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({children, ...rest}) => {
       <ToastInnerContainer {...rest} />
     </div>
   );
-}
+};
 
 const ToastInnerContainer: React.FC<ToastContainerProps> = ({notifications, onClose, autoHide=true, delay=8000}) => {
   return (
@@ -33,7 +33,7 @@ const ToastInnerContainer: React.FC<ToastContainerProps> = ({notifications, onCl
         ))}
     </div>
   );
-}
+};
 
 interface ToastProps {
   notification: Notification,
@@ -59,8 +59,8 @@ const ToastDisplay: React.FC<ToastProps> = ({ notification, onClose, autoHide, d
       <Toast.Body>{message}</Toast.Body>
     </Toast>
   );
-}
+};
 
 export {
   ToastContainer
-}
+};

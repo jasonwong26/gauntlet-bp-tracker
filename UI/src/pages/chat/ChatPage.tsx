@@ -45,7 +45,8 @@ export const ChatPage: React.FC = () => {
             imageUrl: "/assets/default-avatar.png",
             message: event.message
           };
-          return [...ns, notification]});
+          return [...ns, notification];
+        });
       });
       await webSocket.connect();
   
@@ -93,7 +94,7 @@ export const ChatPage: React.FC = () => {
       ns.splice(index, 1);
       return [...ns];
     });
-  }
+  };
 
   return (
     <ToastContainer notifications={notifications} onClose={onToastClose}>

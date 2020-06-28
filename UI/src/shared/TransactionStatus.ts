@@ -15,6 +15,7 @@ export const buildStatus = (state: TransactionState, error?: string | Error) => 
   const status: TransactionStatus = {
     state,
     error
-  }
+  };
+  
   return status;
 };

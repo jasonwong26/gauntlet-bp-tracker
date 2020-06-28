@@ -18,8 +18,8 @@ export const LoadingByState: React.FC<LoadingByStateProps> = ({status, children}
   } 
   
   if (status.state === TransactionState.ERRORED) {
-    return <Alert variant="danger">loading.message</Alert>
+    return <Alert variant="danger">loading.message</Alert>;
   } 
   
-  return (<>{children}</>)
-}
+  return <>{children}</>;
+};

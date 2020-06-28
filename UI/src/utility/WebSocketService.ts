@@ -18,10 +18,10 @@ export type EventHandler = (input: { [key: string]: any }) => any;
 type DisconnectHandler = (event?: CloseEvent) => any;
 
 enum SocketState {
-  CONNECTING = 0, //	Socket has been created. The connection is not yet open.
-  OPEN = 1,       // The connection is open and ready to communicate.
-  CLOSING = 2,    //	The connection is in the process of closing.
-  CLOSED = 3      // The connection is closed or couldn't be opened.
+  CONNECTING = 0, // Socket has been created. The connection is not yet open.
+  OPEN =       1, // The connection is open and ready to communicate.
+  CLOSING =    2, // The connection is in the process of closing.
+  CLOSED =     3  // The connection is closed or couldn't be opened.
 }
 
 interface Options {
@@ -30,7 +30,7 @@ interface Options {
 
 const defaultOptions: Options = {
   maxRetries: 5
-}
+};
 
 export class WebSocketService implements SocketService {
   uri: string;
@@ -49,7 +49,7 @@ export class WebSocketService implements SocketService {
 
   public isConnected = () => {
     return !!this.socket && this.socket.readyState === SocketState.OPEN;
-  };
+  }
 
   public connect: SocketService["connect"] = async () => {
     this.socket = new WebSocket(this.uri);
@@ -118,10 +118,10 @@ export class WebSocketService implements SocketService {
       try {
         if(this.isConnected()) return;
 
-        console.log("reconnecting...")
+        console.log("reconnecting...");
         await this.connect();
       } catch(error) {
-        console.log("unable to reconnect...", { error })
+        console.log("unable to reconnect...", { error });
       }  
     }
 

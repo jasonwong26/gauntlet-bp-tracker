@@ -1,0 +1,99 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Generic DynamoDb Table Template.
+
+  Used to separate table scaffold/deletion from app templates.
+
+Parameters:
+  TableName:
+    Type: String
+    Description: (Required) The name of the new DynamoDB table. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_]+$
+    ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
+  ProjectName:
+    Type: String
+    Description: (Required) The project this table was created for. Minimum 3 characters
+    MinLength: 3
+    MaxLength: 50
+    AllowedPattern: ^[A-Za-z_]+$
+    ConstraintDescription: 'Required. Can be characters and underscore only. No numbers or special characters allowed.'
+  StageName:
+    Type: String
+    Default: 'Dev'
+    Description: (Required) The stage for this deployment.
+    MinLength: 3
+    MaxLength: 10
+    AllowedValues: 
+      - Dev
+      - Test
+      - Prod
+    ConstraintDescription: 'Required. Must match one of the following values: "Dev", "Test", "Prod".'
+
+Mappings: 
+  TableCapacityMap: 
+    Prod:
+      TableRead: 5
+      TableWrite: 5
+      IndexRead: 5
+      IndexWrite: 5
+    Test:
+      TableRead: 5
+      TableWrite: 5
+      IndexRead: 5
+      IndexWrite: 5
+    Dev:
+      TableRead: 1
+      TableWrite: 1
+      IndexRead: 1
+      IndexWrite: 1
+
+Resources:
+  StorageTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: pk
+        AttributeType: S
+      - AttributeName: sk
+        AttributeType: S
+      - AttributeName: type
+        AttributeType: S
+      - AttributeName: typeSk
+        AttributeType: S
+      KeySchema:
+      - AttributeName: pk
+        KeyType: HASH
+      - AttributeName: sk
+        KeyType: RANGE
+      GlobalSecondaryIndexes:
+      - IndexName: ByType
+        KeySchema: 
+        - AttributeName: type
+          KeyType: HASH
+        - AttributeName: typeSk
+          KeyType: RANGE
+        Projection: 
+          ProjectionType: KEYS_ONLY
+        ProvisionedThroughput:
+          ReadCapacityUnits: !FindInMap [TableCapacityMap, !Ref StageName, IndexRead]
+          WriteCapacityUnits: !FindInMap [TableCapacityMap, !Ref StageName, IndexWrite]
+      ProvisionedThroughput:
+        ReadCapacityUnits: !FindInMap [TableCapacityMap, !Ref StageName, TableRead]
+        WriteCapacityUnits: !FindInMap [TableCapacityMap, !Ref StageName, TableWrite]
+      SSESpecification:
+        SSEEnabled: True
+      TableName: !Ref TableName
+      Tags: 
+      - Key: "project"
+        Value: !Ref ProjectName
+      - Key: "stage"
+        Value: !Ref StageName
+
+Outputs:
+  StorageTableArn:
+    Description: "Storage table ARN"
+    Value: !GetAtt StorageTable.Arn

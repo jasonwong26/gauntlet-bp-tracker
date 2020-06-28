@@ -25,11 +25,11 @@ describe("timers in Jest", () => {
 });
 
 describe("WebSocketService", () => {
-  const endpoint = "wss://8yhgex0kz2.execute-api.us-west-2.amazonaws.com/Prod/?channel=test_channel";
+  const endpoint = "wss://jr9obkn1dd.execute-api.us-west-2.amazonaws.com/Dev/?campaign=test";
   let service: WebSocketService;
 
   afterEach(() => {
-    if(service.connected) {
+    if(service.isConnected()) {
       console.log("disconnecting...");
       service.disconnect();
     }
@@ -48,15 +48,18 @@ describe("WebSocketService", () => {
     await service.connect();
 
     expect(messages.length).toBe(1);
-    expect(service.connected).toBeTruthy();
+    expect(service.isConnected()).toBeTruthy();
 
     service.onDisconnect(event => {
       captureMessages({message: "onDisconnect", event});
+      console.log("disconnected!");
     });
     await service.disconnect();
 
+    
+
     expect(messages.length).toBe(2);
-    expect(service.connected).toBeFalsy();
+    expect(service.isConnected()).toBeFalsy();
   });
   it.skip("can send and receive messages", async () => {
     service = new WebSocketService(endpoint);
@@ -66,15 +69,23 @@ describe("WebSocketService", () => {
       messages.push(message);
     };
 
-    service.subscribe("sendmessage", event => {
-      captureMessages({message: "sendmessage", event});
-    });
 
+    service.onConnect(event => {
+      console.log("connected!", { event });
+    });
     await service.connect();
 
-    const input = { message:"sendmessage", channel:"test_channel", data:"hello world" };    
+    service.subscribe("getsettings", event => {
+      captureMessages({message: "getsettings", event});
+      console.log("received!", { event });
+    });
+    const input = { action:"getsettings", campaign:"test" };    
     service.send(input);
+    console.log("sent!");
 
+    service.onDisconnect(event => {
+      console.log("disconnected!", { event });
+    });
     await service.disconnect();
 
     expect(messages.length).toBe(1);

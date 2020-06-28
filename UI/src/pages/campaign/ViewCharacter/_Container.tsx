@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 
 import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
-import { AppState, SetEncounter, OnPurchase, OnRemove } from "../../characters/View/_types";
+import { AppState, SetEncounter, OnPurchase, OnRemove, Character } from "../../characters/View/_types";
 import { CampaignStorageService } from "../CampaignStorageService";
 import { AppService, CharacterAppService } from "../../characters/View/AppService";
-import { campaign } from "../../../shared/Campaign";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
+import { CampaignSettings } from "../_types";
 
 interface Props {
   campaignId: string
@@ -25,6 +25,8 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
   const [service, setService] = useState<CampaignStorageService>();
   const [connected, setConnected] = useState<boolean>(false);
+  const [campaign, setCampaign] = useState<CampaignSettings>();
+  const [character, setCharacter] = useState<Character>();
   const [appService, setAppService] = useState<AppService>();
   const [appState, setAppState] = useState<AppState>();
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -42,7 +44,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       setNotifications(ns => {
         return [...ns, notification];
       });
-    })
+    });
 
     // Cleanup method
     return () => {
@@ -55,14 +57,24 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
   useEffect(() => {
     if(!service || !connected) return;
 
-    service.getCharacter(characterId, character => {
-      const app = new CharacterAppService(campaign, character);
-      setAppService(app);
-      const state = app.getState();
-      setAppState(state);
-      setLoading(buildStatus(TransactionState.SUCCESS));
+    service.getSettings(settings => {
+      setCampaign(settings);
+    });
+
+    service.getCharacter(characterId, char => {
+      setCharacter(char);
     });
   }, [campaignId, characterId, service, connected]);
+
+  useEffect(() => {
+    if(!campaign || !character) return;
+
+    const app = new CharacterAppService(campaign, character);
+    setAppService(app);
+    const state = app.getState();
+    setAppState(state);
+    setLoading(buildStatus(TransactionState.SUCCESS));
+  }, [campaign, character]);
 
   const setEncounter: SetEncounter = encounter => {    
     appService!.setEncounter(encounter);
@@ -96,7 +108,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       ns.splice(index, 1);
       return [...ns];
     });
-  }
+  };
   return (
     <LoadingByState status={loading}>
       { children(notifications, onToastClose, appState, setEncounter, onPurchase, onRemove) }

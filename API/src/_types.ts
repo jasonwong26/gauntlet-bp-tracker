@@ -50,6 +50,10 @@ export interface Character extends CharacterSummary {
   [key: string]: any
 }
 
+export interface CampaignSettings {
+  [key: string]: any
+}
+
 interface DbRecord {
   pk: string,
   sk: string,
@@ -60,6 +64,9 @@ interface DbTypeRecord extends DbRecord {
 }
 export interface DbCampaign extends DbRecord {
   campaign: Campaign
+}
+export interface DbCampaignSettings extends DbRecord {
+  settings: CampaignSettings
 }
 // TODO: refactor to use this
 export interface DbCharacter extends DbTypeRecord {

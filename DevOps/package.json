@@ -1,0 +1,11 @@
+{
+  "name": "gauntlet-bp-tracker-devops",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "deployTable": "sh other/deploy.sh"
+  },
+  "author": "",
+  "license": "ISC"
+}

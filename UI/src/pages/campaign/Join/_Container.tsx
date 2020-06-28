@@ -56,7 +56,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
       if(index === -1) {
         await listService.add(campaign);  
       }
-    }
+    };
 
     addToList();
   }, [listService, campaign]);

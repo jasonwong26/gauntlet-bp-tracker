@@ -1,7 +1,7 @@
 import { ListPage } from "./List/ListPage";
 import { ViewPage } from "./View/ViewPage";
 import { JoinPage } from "./Join/JoinPage";
-import { ViewCharacterPage } from "./ViewCharacter/ViewPage"
+import { ViewCharacterPage } from "./ViewCharacter/ViewPage";
 
 export * from "./Create";
 

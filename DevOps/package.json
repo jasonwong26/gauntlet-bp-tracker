@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deployTable": "sh other/deploy.sh",
-    "scaffold": "cdk deploy gauntlet-bp-tracker" 
+    "scaffold": "cdk deploy gauntlet-bp-tracker"
   },
   "author": "",
   "license": "ISC",
@@ -15,6 +15,7 @@
     "@aws-cdk/aws-codepipeline-actions": "^1.49.1",
     "@aws-cdk/aws-s3": "^1.49.1",
     "@aws-cdk/core": "^1.49.1",
-    "ts-node": "^8.10.2"
+    "ts-node": "^8.10.2",
+    "typescript": "^3.8.3"
   }
 }

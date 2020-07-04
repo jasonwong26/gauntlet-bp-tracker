@@ -6,11 +6,18 @@ phases:
       nodejs: 12
     commands:
       - npm install
+  
+  pre_build:
+    commands:
+      - cd ./ui
+
   build:
     commands:
-      - cd ui
       - npm run build
-      - cd ../
+
+  post_build:
+    commands:
+      - cd ./
 
 artifacts:
   base-directory: ./ui/build

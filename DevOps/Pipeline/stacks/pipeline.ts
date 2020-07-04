@@ -23,13 +23,20 @@ export class Pipeline extends CDK.Stack {
       publicReadAccess: true,
     })
 
+    const bucketArtifacts = new S3.Bucket(this, "Artifacts", {
+      websiteIndexDocument: 'index.html',
+      websiteErrorDocument: 'error.html',
+      publicReadAccess: true,
+    })
+
     // AWS CodeBuild artifacts
     const outputSources = new CodePipeline.Artifact()
     const outputWebsite = new CodePipeline.Artifact()
 
     // AWS CodePipeline pipeline
     const pipeline = new CodePipeline.Pipeline(this, "Pipeline", {
-      restartExecutionOnUpdate: true
+      restartExecutionOnUpdate: true,
+      artifactBucket: bucketArtifacts
     })
 
     // AWS CodePipeline stage to clone sources from GitHub repository

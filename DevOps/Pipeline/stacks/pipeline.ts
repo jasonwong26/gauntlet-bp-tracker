@@ -32,6 +32,7 @@ export class Pipeline extends CDK.Stack {
     // AWS CodeBuild artifacts
     const outputSources = new CodePipeline.Artifact()
     const outputWebsite = new CodePipeline.Artifact()
+    const outputApi = new CodePipeline.Artifact()
 
     // AWS CodePipeline pipeline
     const pipeline = new CodePipeline.Pipeline(this, "Pipeline", {
@@ -64,10 +65,20 @@ export class Pipeline extends CDK.Stack {
           actionName: 'Website',
           project: new CodeBuild.PipelineProject(this, "BuildWebsite", {
             projectName: `${id}-BuildWebsite`,
-            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/ui-buildspec.yml'),
+            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-ui.yml'),
           }),
           input: outputSources,
           outputs: [outputWebsite],
+        }),
+        // AWS CodePipeline action to run CodeBuild project
+        new CodePipelineAction.CodeBuildAction({
+          actionName: 'API',
+          project: new CodeBuild.PipelineProject(this, "BuildAPI", {
+            projectName: `${id}-BuildAPI`,
+            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-api.yml'),
+          }),
+          input: outputSources,
+          outputs: [outputApi],
         }),
       ],
     })
@@ -81,6 +92,21 @@ export class Pipeline extends CDK.Stack {
           actionName: 'Website',
           input: outputWebsite,
           bucket: bucketWebsite,
+        }),
+
+        // AWS CodePipeline action to deploy API Code and Stack
+        new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
+          actionName: 'API - Create ChangeSet',
+          stackName: "gauntlet-bp-tracker-api-dev",
+          changeSetName: "gauntlet-bp-tracker-api-dev-changeset",
+          templatePath: outputApi.atPath("packaged.yaml"),
+          adminPermissions: false
+        }),
+        // AWS CodePipeline action to deploy API Code and Stack
+        new CodePipelineAction.CloudFormationExecuteChangeSetAction({
+          actionName: 'API - Execute ChangeSet',
+          stackName: "gauntlet-bp-tracker-api-dev",
+          changeSetName: "gauntlet-bp-tracker-api-dev-changeset"
         }),
       ],
     })

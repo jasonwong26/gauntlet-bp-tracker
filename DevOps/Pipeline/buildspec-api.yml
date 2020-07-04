@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  
+  build:
+    commands:
+      - cd API
+      - npm install
+      - npm run build
+      - cd lib
+      - |
+        sam package \
+          --template-file template.yaml \
+          --output-template-file packaged.yaml \
+          --s3-bucket developer-mouse-sam-gauntlet-bp-tracker-api
+
+artifacts:
+  base-directory: ./API/lib
+  files:
+    - '**/*'    
+
+cache:
+  paths:
+    - './node_modules/**/*'

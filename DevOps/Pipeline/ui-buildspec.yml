@@ -4,23 +4,15 @@ phases:
   install:
     runtime-versions:
       nodejs: 12
-    commands:
-      - npm install
   
-  pre_build:
-    commands:
-      - cd ./ui
-
   build:
     commands:
+      - cd UI
+      - npm install
       - npm run build
 
-  post_build:
-    commands:
-      - cd ./
-
 artifacts:
-  base-directory: ./ui/build
+  base-directory: ./UI/build
   files:
     - '**/*'
 

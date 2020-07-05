@@ -9,6 +9,13 @@ export interface PipelineProps extends CDK.StackProps {
     owner: string
     repository: string,
     branch?: string
+  },
+  ui: {
+    s3BucketName: string
+  },
+  api: {
+    stackName: string,
+    s3BucketName: string
   }
 }
 
@@ -17,11 +24,7 @@ export class Pipeline extends CDK.Stack {
     super(scope, id, props)
 
     // Amazon S3 bucket to store CRA website
-    const bucketWebsite = new S3.Bucket(this, "Files", {
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: 'error.html',
-      publicReadAccess: true,
-    })
+    const bucketWebsite = S3.Bucket.fromBucketName(this, "bucketWebsite", props.ui.s3BucketName);
 
     const bucketArtifacts = new S3.Bucket(this, "Artifacts", {
       websiteIndexDocument: 'index.html',
@@ -76,6 +79,9 @@ export class Pipeline extends CDK.Stack {
           project: new CodeBuild.PipelineProject(this, "BuildAPI", {
             projectName: `${id}-BuildAPI`,
             buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-api.yml'),
+            environmentVariables: {
+              "S3_BUCKETNAME": { value: props.api.s3BucketName }
+            }
           }),
           input: outputSources,
           outputs: [outputApi],
@@ -97,10 +103,10 @@ export class Pipeline extends CDK.Stack {
         // AWS CodePipeline action to deploy API Code and Stack
         new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
           actionName: 'API - Create ChangeSet',
-          stackName: "gauntlet-bp-tracker-api-dev",
-          changeSetName: "gauntlet-bp-tracker-api-dev-changeset",
+          stackName: props.api.stackName,
+          changeSetName: `${props.api.stackName}-changeset`,
           templatePath: outputApi.atPath("packaged.yaml"),
-          adminPermissions: false
+          adminPermissions: false,
         }),
         // AWS CodePipeline action to deploy API Code and Stack
         new CodePipelineAction.CloudFormationExecuteChangeSetAction({

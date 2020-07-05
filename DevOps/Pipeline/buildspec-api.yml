@@ -7,6 +7,8 @@ phases:
   
   build:
     commands:
+      - echo starting build...
+      - echo $S3_BUCKETNAME
       - cd API
       - npm install
       - npm run build
@@ -15,7 +17,7 @@ phases:
         sam package \
           --template-file template.yaml \
           --output-template-file packaged.yaml \
-          --s3-bucket developer-mouse-sam-gauntlet-bp-tracker-api
+          --s3-bucket $S3_BUCKETNAME
 
 artifacts:
   base-directory: ./API/lib

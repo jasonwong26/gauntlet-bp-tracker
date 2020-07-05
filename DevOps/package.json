@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "deployTable": "sh other/deploy.sh",
-    "scaffold": "cdk deploy gauntlet-bp-tracker"
+    "scaffold": "cdk deploy gauntlet-bp-tracker-pipeline"
   },
   "author": "",
   "license": "ISC",

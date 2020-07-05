@@ -102,7 +102,7 @@ export class Pipeline extends CDK.Stack {
 
         // AWS CodePipeline action to deploy API Code and Stack
         new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
-          actionName: 'API - Create ChangeSet',
+          actionName: 'API_CreateChangeSet',
           stackName: props.api.stackName,
           changeSetName: `${props.api.stackName}-changeset`,
           templatePath: outputApi.atPath("packaged.yaml"),
@@ -110,7 +110,7 @@ export class Pipeline extends CDK.Stack {
         }),
         // AWS CodePipeline action to deploy API Code and Stack
         new CodePipelineAction.CloudFormationExecuteChangeSetAction({
-          actionName: 'API - Execute ChangeSet',
+          actionName: 'API_ExecuteChangeSet',
           stackName: "gauntlet-bp-tracker-api-dev",
           changeSetName: "gauntlet-bp-tracker-api-dev-changeset"
         }),

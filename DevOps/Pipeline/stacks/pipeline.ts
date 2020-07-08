@@ -70,17 +70,18 @@ export class Stack extends CDK.Stack {
     pipeline.addStage({
       stageName: 'Build',
       actions: [
-        // // AWS CodePipeline action to run CodeBuild project
-        // new CodePipelineAction.CodeBuildAction({
-        //   actionName: 'Website',
-        //   project: new CodeBuild.PipelineProject(this, "BuildWebsite", {
-        //     projectName: `${id}-BuildWebsite`,
-        //     buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-ui.yml'),
-        //   }),
-        //   input: outputSources,
-        //   outputs: [outputWebsite],
-        // }),
-        // AWS CodePipeline action to run CodeBuild project
+        // Build UI
+        new CodePipelineAction.CodeBuildAction({
+          actionName: 'Website',
+          project: new CodeBuild.PipelineProject(this, "BuildWebsite", {
+            projectName: `${id}-BuildWebsite`,
+            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-ui.yml'),
+          }),
+          input: outputSources,
+          outputs: [outputWebsite],
+        }),
+
+        // Build API and generate SAM deployment artifacts
         new CodePipelineAction.CodeBuildAction({
           actionName: 'API',
           project: new CodeBuild.PipelineProject(this, "BuildAPI", {
@@ -99,44 +100,39 @@ export class Stack extends CDK.Stack {
     });
 
     // AWS CodePipeline stage to deployt CRA website and CDK resources
-    // pipeline.addStage({
-    //   stageName: 'Deploy',
-    //   actions: [
-    //     // // AWS CodePipeline action to deploy CRA website to S3
-    //     // new CodePipelineAction.S3DeployAction({
-    //     //   actionName: 'Website',
-    //     //   input: outputWebsite,
-    //     //   bucket: bucketWebsite,
-    //     // }),
+    pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        // Deploy UI to S3
+        new CodePipelineAction.S3DeployAction({
+          runOrder: 1,
+          actionName: 'Website',
+          input: outputWebsite,
+          bucket: bucketWebsite,
+        }),
 
-    //     // // AWS CodePipeline action to deploy API Code and Stack
-    //     // new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
-    //     //   actionName: 'API_CreateChangeSet',
-    //     //   stackName: props.api.stackName,
-    //     //   changeSetName: `${props.api.stackName}-changeset`,
-    //     //   templatePath: outputApi.atPath("packaged.yaml"),
-    //     //   adminPermissions: false,
-    //     // }),
-    //     // // AWS CodePipeline action to deploy API Code and Stack
-    //     // new CodePipelineAction.CloudFormationExecuteChangeSetAction({
-    //     //   actionName: 'API_ExecuteChangeSet',
-    //     //   stackName: "gauntlet-bp-tracker-api-dev",
-    //     //   changeSetName: "gauntlet-bp-tracker-api-dev-changeset"
-    //     // }),
-    //   ],
-    // })
-
-    new CDK.CfnOutput(this, 'PipelineArn', {
-      value: pipeline.pipelineArn,
-      description: 'Pipeline ARN',
+        // Generate changeset for API
+        new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
+          runOrder: 1,
+          actionName: 'API_CreateChangeSet',
+          stackName: props.api.stackName,
+          changeSetName: `${props.api.stackName}-changeset`,
+          templatePath: outputApi.atPath("packaged.yaml"),
+          adminPermissions: true,
+        }),
+        // Deploy API changeset
+        new CodePipelineAction.CloudFormationExecuteChangeSetAction({
+          runOrder: 2,
+          actionName: 'API_ExecuteChangeSet',
+          stackName: props.api.stackName,
+          changeSetName: `${props.api.stackName}-changeset`
+        }),
+      ],
     })
+
     new CDK.CfnOutput(this, 'PipelineName', {
       value: pipeline.pipelineName,
       description: 'Pipeline Name',
-    })
-    new CDK.CfnOutput(this, 'PipelineUrl', {
-      value: pipeline.pipelineName,
-      description: `https://${this.region}.console.aws.amazon.com/codesuite/codepipeline/pipelines/${pipeline.pipelineName}/view?region=${this.region}`,
     })
   }
 }

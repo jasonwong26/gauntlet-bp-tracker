@@ -4,11 +4,14 @@ import * as S3 from '@aws-cdk/aws-s3'
 import * as CodePipeline from '@aws-cdk/aws-codepipeline'
 import * as CodePipelineAction from '@aws-cdk/aws-codepipeline-actions'
 
-export interface PipelineProps extends CDK.StackProps {
+export interface Props extends CDK.StackProps {
   github: {
     owner: string
     repository: string,
     branch?: string
+  },
+  artifacts: {
+    s3BucketName: string
   },
   ui: {
     s3BucketName: string
@@ -19,18 +22,14 @@ export interface PipelineProps extends CDK.StackProps {
   }
 }
 
-export class Pipeline extends CDK.Stack {
-  constructor(scope: CDK.App, id: string, props: PipelineProps) {
+export class Stack extends CDK.Stack {
+  constructor(scope: CDK.App, id: string, props: Props) {
     super(scope, id, props)
 
     // Amazon S3 bucket to store CRA website
+    const bucketArtifacts = S3.Bucket.fromBucketName(this, "bucketArtifacts", props.artifacts.s3BucketName);
     const bucketWebsite = S3.Bucket.fromBucketName(this, "bucketWebsite", props.ui.s3BucketName);
-
-    const bucketArtifacts = new S3.Bucket(this, "Artifacts", {
-      websiteIndexDocument: 'index.html',
-      websiteErrorDocument: 'error.html',
-      publicReadAccess: true,
-    })
+    const bucketApi = S3.Bucket.fromBucketName(this, "bucketApi", props.api.s3BucketName);
 
     // AWS CodeBuild artifacts
     const outputSources = new CodePipeline.Artifact()
@@ -41,7 +40,15 @@ export class Pipeline extends CDK.Stack {
     const pipeline = new CodePipeline.Pipeline(this, "Pipeline", {
       restartExecutionOnUpdate: true,
       artifactBucket: bucketArtifacts
-    })
+    });
+
+    // Grant pipeline access to specified S3 buckets
+    bucketArtifacts.grantReadWrite(pipeline.role);
+    bucketArtifacts.grantPut(pipeline.role);
+    bucketWebsite.grantReadWrite(pipeline.role);
+    bucketWebsite.grantPut(pipeline.role);
+    bucketApi.grantReadWrite(pipeline.role);
+    bucketApi.grantPut(pipeline.role);
 
     // AWS CodePipeline stage to clone sources from GitHub repository
     pipeline.addStage({
@@ -80,14 +87,16 @@ export class Pipeline extends CDK.Stack {
             projectName: `${id}-BuildAPI`,
             buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/buildspec-api.yml'),
             environmentVariables: {
-              "S3_BUCKETNAME": { value: props.api.s3BucketName }
-            }
+              "S3_BUCKETNAME": { value: bucketArtifacts.bucketName },
+              "$S3_FOLDER": { value: "api-stack"}
+            },
+
           }),
           input: outputSources,
           outputs: [outputApi],
         }),
       ],
-    })
+    });
 
     // AWS CodePipeline stage to deployt CRA website and CDK resources
     pipeline.addStage({
@@ -100,26 +109,30 @@ export class Pipeline extends CDK.Stack {
           bucket: bucketWebsite,
         }),
 
-        // AWS CodePipeline action to deploy API Code and Stack
-        new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
-          actionName: 'API_CreateChangeSet',
-          stackName: props.api.stackName,
-          changeSetName: `${props.api.stackName}-changeset`,
-          templatePath: outputApi.atPath("packaged.yaml"),
-          adminPermissions: false,
-        }),
-        // AWS CodePipeline action to deploy API Code and Stack
-        new CodePipelineAction.CloudFormationExecuteChangeSetAction({
-          actionName: 'API_ExecuteChangeSet',
-          stackName: "gauntlet-bp-tracker-api-dev",
-          changeSetName: "gauntlet-bp-tracker-api-dev-changeset"
-        }),
+        // // AWS CodePipeline action to deploy API Code and Stack
+        // new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
+        //   actionName: 'API_CreateChangeSet',
+        //   stackName: props.api.stackName,
+        //   changeSetName: `${props.api.stackName}-changeset`,
+        //   templatePath: outputApi.atPath("packaged.yaml"),
+        //   adminPermissions: false,
+        // }),
+        // // AWS CodePipeline action to deploy API Code and Stack
+        // new CodePipelineAction.CloudFormationExecuteChangeSetAction({
+        //   actionName: 'API_ExecuteChangeSet',
+        //   stackName: "gauntlet-bp-tracker-api-dev",
+        //   changeSetName: "gauntlet-bp-tracker-api-dev-changeset"
+        // }),
       ],
     })
 
-    new CDK.CfnOutput(this, 'WebsiteURL', {
-      value: bucketWebsite.bucketWebsiteUrl,
-      description: 'Website URL',
+    new CDK.CfnOutput(this, 'PipelineArn', {
+      value: pipeline.pipelineArn,
+      description: 'Pipeline ARN',
+    })
+    new CDK.CfnOutput(this, 'PipelineName', {
+      value: pipeline.pipelineName,
+      description: 'Pipeline Name',
     })
   }
 }

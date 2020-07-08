@@ -17,7 +17,8 @@ phases:
         sam package \
           --template-file template.yaml \
           --output-template-file packaged.yaml \
-          --s3-bucket $S3_BUCKETNAME
+          --s3-bucket $S3_BUCKETNAME \
+          --s3-prefix $S3_FOLDER
 
 artifacts:
   base-directory: ./API/lib

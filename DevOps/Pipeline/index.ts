@@ -1,13 +1,32 @@
 import * as cdk from '@aws-cdk/core'
 
-import { Pipeline, PipelineProps } from './stacks/pipeline'
+import * as Buckets from './stacks/buckets'
+import * as Pipeline from './stacks/pipeline'
 
-const config: PipelineProps = {
+const app = new cdk.App()
+
+const bucketProps: Buckets.Props = {
+  artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
+  ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
+  api: { 
+    s3BucketName: "developer-mouse-sam-gauntlet-bp-tracker-api", 
+  },
+  env: { region: "us-west-2" },
+  tags: {
+    project: "Gauntlet BP Tracker",
+    stage: "Staging"
+  },
+  description: "S3 Buckets"
+}
+new Buckets.Stack(app, "gauntlet-bp-tracker-buckets", bucketProps);
+
+const pipelineProps: Pipeline.Props = {
   github: {
     owner: "jasonwong26",
     repository: "gauntlet-bp-tracker",
     branch: "Staging"
   },
+  artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
   ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
   api: { 
     s3BucketName: "developer-mouse-sam-gauntlet-bp-tracker-api", 
@@ -20,9 +39,6 @@ const config: PipelineProps = {
   },
   description: "Deployment stack"
 }
-
-const app = new cdk.App()
-
-new Pipeline(app, "gauntlet-bp-tracker-pipeline", config)
+new Pipeline.Stack(app, "gauntlet-bp-tracker-pipeline", pipelineProps);
 
 app.synth()

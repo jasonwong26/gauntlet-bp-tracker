@@ -9,6 +9,7 @@ phases:
     commands:
       - echo starting build...
       - echo $S3_BUCKETNAME
+      - echo $S3_FOLDER
       - cd API
       - npm install
       - npm run build

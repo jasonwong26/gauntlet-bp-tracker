@@ -88,7 +88,11 @@ export class Stack extends CDK.Stack {
           actionName: 'API',
           project: new CodeBuild.PipelineProject(this, "BuildAPI", {
             projectName: `${id}-BuildAPI`,
-            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/build-api.yml')
+            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/build-api.yml'),
+            environmentVariables: {
+              "PACKAGE_BUCKETNAME": { value: bucketArtifacts.bucketName },
+              "PACKAGE_FOLDER": { value: "api-stack"}
+            }
           }),
           input: outputSources,
           outputs: [outputApi],
@@ -108,40 +112,26 @@ export class Stack extends CDK.Stack {
           bucket: bucketWebsite,
         }),
 
-        new CodePipelineAction.CodeBuildAction({
-          actionName: 'API',
-          project: new CodeBuild.PipelineProject(this, "DeployAPI", {
-            projectName: `${id}-DeployAPI`,
-            buildSpec: CodeBuild.BuildSpec.fromSourceFilename('./DevOps/Pipeline/deploy-api.yml'),
-            environmentVariables: {
-              "PACKAGE_BUCKETNAME": { value: bucketArtifacts.bucketName },
-              "PACKAGE_FOLDER": { value: "api-stack"},
-              "STACK_NAME": { value: props.api.stackName },
-              "TABLE_NAME": { value: props.api.tableName },
-              "STAGE_NAME": { value: props.api.stage }
-            },
-
-          }),
-          input: outputApi
+        // Generate changeset for API
+        new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
+          runOrder: 1,
+          actionName: 'API_CreateChangeSet',
+          stackName: props.api.stackName,
+          changeSetName: `${props.api.stackName}-changeset`,
+          templatePath: outputApi.atPath("packaged.yaml"),
+          adminPermissions: true,
+          parameterOverrides: {
+            TableName: props.api.tableName,
+            StageName: props.api.stage
+          }
         }),
-
-
-        // // Generate changeset for API
-        // new CodePipelineAction.CloudFormationCreateReplaceChangeSetAction({
-        //   runOrder: 1,
-        //   actionName: 'API_CreateChangeSet',
-        //   stackName: props.api.stackName,
-        //   changeSetName: `${props.api.stackName}-changeset`,
-        //   templatePath: outputApi.atPath("packaged.yaml"),
-        //   adminPermissions: true
-        // }),
-        // // Deploy API changeset
-        // new CodePipelineAction.CloudFormationExecuteChangeSetAction({
-        //   runOrder: 2,
-        //   actionName: 'API_ExecuteChangeSet',
-        //   stackName: props.api.stackName,
-        //   changeSetName: `${props.api.stackName}-changeset`          
-        // }),
+        // Deploy API changeset
+        new CodePipelineAction.CloudFormationExecuteChangeSetAction({
+          runOrder: 2,
+          actionName: 'API_ExecuteChangeSet',
+          stackName: props.api.stackName,
+          changeSetName: `${props.api.stackName}-changeset`          
+        }),
       ],
     })
 

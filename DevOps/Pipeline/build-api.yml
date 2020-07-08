@@ -12,6 +12,7 @@ phases:
       - npm run build
       - echo $PACKAGE_BUCKETNAME
       - echo $PACKAGE_FOLDER
+      - cd lib
       - |
         sam package \
           --template-file template.yaml \

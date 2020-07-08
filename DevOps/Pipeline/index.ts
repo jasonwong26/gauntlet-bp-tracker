@@ -30,7 +30,9 @@ const pipelineProps: Pipeline.Props = {
   ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
   api: { 
     s3BucketName: "developer-mouse-sam-gauntlet-bp-tracker-api", 
-    stackName: "gauntlet-bp-tracker-api-staging" 
+    stackName: "gauntlet-bp-tracker-api-staging",
+    tableName: "gauntlet_bp_tracker_dev",
+    stage: "Staging"
   },
   env: { region: "us-west-2" },
   tags: {

@@ -1,0 +1,21 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 12
+  
+  build:
+    commands:
+      - cd API
+      - npm install
+      - npm run build
+
+artifacts:
+  base-directory: ./API/lib
+  files:
+    - '**/*'    
+
+cache:
+  paths:
+    - './node_modules/**/*'

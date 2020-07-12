@@ -4,19 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "lint": "tslint '**/*.ts?(x)' || exit 0",
+    "lint:fix": "tslint '**/*.ts?(x)' --fix",
     "deployTable": "sh other/deploy.sh",
     "scaffold:buckets": "cdk deploy gauntlet-bp-tracker-buckets",
-    "scaffold:pipeline": "cdk deploy gauntlet-bp-tracker-pipeline"
+    "scaffold:pipeline": "cdk deploy gauntlet-bp-tracker-pipeline",
+    "scaffold:hosting": "cdk deploy gauntlet-bp-tracker-hosting"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@aws-cdk/aws-apigatewayv2": "^1.49.1",
+    "@aws-cdk/aws-cloudfront": "^1.49.1",
     "@aws-cdk/aws-codebuild": "^1.49.1",
     "@aws-cdk/aws-codepipeline": "^1.49.1",
     "@aws-cdk/aws-codepipeline-actions": "^1.49.1",
+    "@aws-cdk/aws-route53": "^1.49.1",
     "@aws-cdk/aws-s3": "^1.49.1",
     "@aws-cdk/core": "^1.49.1",
     "ts-node": "^8.10.2",
+    "tslint": "^6.1.2",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.8.3"
   },
   "dependencies": {}

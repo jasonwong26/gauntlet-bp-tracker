@@ -22,6 +22,13 @@ Parameters:
     MaxLength: 10
     AllowedPattern: ^[A-Za-z]+$
     ConstraintDescription: 'Required. Can be characters only. No numbers or special characters allowed.'
+  DomainName:
+    Type: String
+    Default: 'api.gauntlet.developermouse.com'
+    Description: (Required) The domain for the api.
+    MinLength: 3
+    AllowedPattern: ^[A-Za-z0-9.\-]+$
+    ConstraintDescription: 'Required. Must be a valid domain value that the AWS account has access to.'
 
 Globals:
   Function:
@@ -31,7 +38,7 @@ Globals:
       project: Gauntlet BP Tracker
       stage: !Ref StageName
 
-Resources:
+Resources:  
   GauntletWebSocket:
     Type: AWS::ApiGatewayV2::Api
     Properties:
@@ -65,6 +72,14 @@ Resources:
       Tags:
         project: Gauntlet BP Tracker
         stage: !Ref StageName
+  PathMapping:
+    Type: AWS::ApiGateway::BasePathMapping
+    DependsOn: Stage
+    Properties:
+      BasePath: !Ref StageName
+      DomainName: !Ref DomainName
+      ApiId: !Ref GauntletWebSocket
+      Stage: !Ref StageName
 
   ConnectRoute:
     Type: AWS::ApiGatewayV2::Route
@@ -131,8 +146,6 @@ Resources:
     Properties:
       CodeUri: ondisconnect/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -173,8 +186,6 @@ Resources:
     Properties:
       CodeUri: getcampaign/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -221,8 +232,6 @@ Resources:
     Properties:
       CodeUri: getsettings/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -269,8 +278,6 @@ Resources:
     Properties:
       CodeUri: getcharacter/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -317,8 +324,6 @@ Resources:
     Properties:
       CodeUri: savecharacter/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -365,8 +370,6 @@ Resources:
     Properties:
       CodeUri: additem/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -413,8 +416,6 @@ Resources:
     Properties:
       CodeUri: removeitem/
       Handler: app.handler
-      MemorySize: 256
-      Runtime: nodejs12.x
       Environment:
         Variables:
           TABLE_NAME: !Ref TableName
@@ -437,6 +438,10 @@ Resources:
       Principal: apigateway.amazonaws.com
 
 Outputs:
+  WebSocketArn:
+    Description: "WebSocket ARN"
+    Value: !GetAtt GauntletWebSocket.Arn
+
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"
     Value: !Join [ '', [ 'wss://', !Ref GauntletWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]

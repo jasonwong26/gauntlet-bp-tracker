@@ -78,7 +78,7 @@ Resources:
     Properties:
       BasePath: !Ref StageName
       DomainName: !Ref DomainName
-      ApiId: !Ref GauntletWebSocket
+      RestApiId: !Ref GauntletWebSocket
       Stage: !Ref StageName
 
   ConnectRoute:

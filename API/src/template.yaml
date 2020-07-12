@@ -72,14 +72,14 @@ Resources:
       Tags:
         project: Gauntlet BP Tracker
         stage: !Ref StageName
-  PathMapping:
-    Type: AWS::ApiGateway::BasePathMapping
+  ApiMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
     DependsOn: Stage
-    Properties:
-      BasePath: !Ref StageName
+    Properties: 
       DomainName: !Ref DomainName
-      RestApiId: !Ref GauntletWebSocket
-      Stage: !Ref StageName
+      ApiId: !Ref GauntletWebSocket
+      Stage: !Ref Stage
+      ApiMappingKey: !Ref Stage
 
   ConnectRoute:
     Type: AWS::ApiGatewayV2::Route
@@ -438,6 +438,9 @@ Resources:
       Principal: apigateway.amazonaws.com
 
 Outputs:
+  WebSocketID:
+    Description: "The generated API ID"
+    Value: !Ref GauntletWebSocket
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"
     Value: !Join [ '', [ 'wss://', !Ref GauntletWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]

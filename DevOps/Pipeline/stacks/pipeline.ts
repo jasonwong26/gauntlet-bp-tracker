@@ -130,7 +130,7 @@ export class Stack extends CDK.Stack {
           runOrder: 2,
           actionName: "API_ExecuteChangeSet",
           stackName: props.api.stackName,
-          changeSetName: `${props.api.stackName}-changeset`          
+          changeSetName: `${props.api.stackName}-changeset`
         })
       ]
     });

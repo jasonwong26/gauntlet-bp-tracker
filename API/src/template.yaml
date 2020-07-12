@@ -438,10 +438,6 @@ Resources:
       Principal: apigateway.amazonaws.com
 
 Outputs:
-  WebSocketArn:
-    Description: "WebSocket ARN"
-    Value: !GetAtt GauntletWebSocket.Arn
-
   WebSocketURI:
     Description: "The WSS Protocol URI to connect to"
     Value: !Join [ '', [ 'wss://', !Ref GauntletWebSocket, '.execute-api.',!Ref 'AWS::Region','.amazonaws.com/',!Ref 'Stage'] ]

@@ -14,12 +14,9 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@aws-cdk/aws-apigatewayv2": "^1.49.1",
-    "@aws-cdk/aws-cloudfront": "^1.49.1",
     "@aws-cdk/aws-codebuild": "^1.49.1",
     "@aws-cdk/aws-codepipeline": "^1.49.1",
     "@aws-cdk/aws-codepipeline-actions": "^1.49.1",
-    "@aws-cdk/aws-route53": "^1.49.1",
     "@aws-cdk/aws-s3": "^1.49.1",
     "@aws-cdk/core": "^1.49.1",
     "ts-node": "^8.10.2",

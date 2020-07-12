@@ -7,6 +7,8 @@
     "lint:fix": "tslint 'src/**/*.ts?(x)' --fix",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build:prod": "npm run build",
+    "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -36,6 +38,7 @@
     "@types/react-router-bootstrap": "^0.24.5",
     "@types/react-router-dom": "^5.1.5",
     "@types/shortid": "0.0.29",
+    "env-cmd": "^10.1.0",
     "install": "^0.13.0",
     "npm": "^6.14.5",
     "tslint-config-prettier": "^1.18.0"

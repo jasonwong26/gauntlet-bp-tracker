@@ -8,8 +8,9 @@ phases:
   build:
     commands:
       - cd UI
+      - echo $BUILD_COMMAND
       - npm install
-      - npm run build
+      - npm run $BUILD_COMMAND
 
 artifacts:
   base-directory: ./UI/build

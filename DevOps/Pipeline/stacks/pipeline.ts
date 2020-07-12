@@ -14,7 +14,8 @@ export interface Props extends CDK.StackProps {
     s3BucketName: string
   },
   ui: {
-    s3BucketName: string
+    s3BucketName: string,
+    buildCommand?: string
   },
   api: {
     stackName: string,
@@ -76,7 +77,9 @@ export class Stack extends CDK.Stack {
           actionName: "Website",
           project: new CodeBuild.PipelineProject(this, "BuildWebsite", {
             projectName: `${id}-BuildWebsite`,
-            buildSpec: CodeBuild.BuildSpec.fromSourceFilename("./DevOps/Pipeline/build-ui.yml")
+            buildSpec: CodeBuild.BuildSpec.fromSourceFilename("./DevOps/Pipeline/build-ui.yml"),
+            environmentVariables: {
+              "BUILD_COMMAND": { value: props.ui.buildCommand ?? "build" }            }
           }),
           input: outputSources,
           outputs: [outputWebsite]

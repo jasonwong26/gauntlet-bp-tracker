@@ -1,6 +1,5 @@
 import * as cdk from "@aws-cdk/core";
 
-import * as Hosting from "./stacks/hosting";
 import * as Buckets from "./stacks/buckets";
 import * as Pipeline from "./stacks/pipeline";
 
@@ -8,22 +7,11 @@ import * as Pipeline from "./stacks/pipeline";
 
 const app = new cdk.App();
 
-const hostingProps: Hosting.Props = {
-  api: { 
-    name: "gauntlet-bp-tracker",
-    protocolType: "WEBSOCKET",
-    routeSelectionExpression: "$request.body.action"
-  },
-  tags: {
-    project: "Gauntlet BP Tracker"
-  },
-  description: "API Gateway resource shared between environments"  
-};
-new Hosting.Stack(app, "gauntlet-bp-tracker-hosting", hostingProps);
-
 const bucketProps: Buckets.Props = {
   artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
-  ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
+  ui: { 
+    s3BucketName: "gauntlet-bp-tracker-ui-staging",
+  },
   api: { 
     s3BucketName: "developer-mouse-sam-gauntlet-bp-tracker-api" 
   },
@@ -43,7 +31,10 @@ const pipelineProps: Pipeline.Props = {
     branch: "Staging"
   },
   artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
-  ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
+  ui: { 
+    s3BucketName: "gauntlet-bp-tracker-ui-staging",
+    buildCommand: "build:staging"
+   },
   api: { 
     stackName: "gauntlet-bp-tracker-api-staging",
     tableName: "gauntlet_bp_tracker_dev",

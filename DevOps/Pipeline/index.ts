@@ -7,14 +7,9 @@ import * as Pipeline from "./stacks/pipeline";
 
 const app = new cdk.App();
 
-const bucketProps: Buckets.Props = {
-  artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
-  ui: { 
-    s3BucketName: "gauntlet-bp-tracker-ui-staging",
-  },
-  api: { 
-    s3BucketName: "developer-mouse-sam-gauntlet-bp-tracker-api" 
-  },
+const stageBucketProps: Buckets.Props = {
+  artifacts: { s3BucketName: "gauntlet-bp-tracker-staging-pipeline-artifacts" },
+  ui: { s3BucketName: "gauntlet-bp-tracker-ui-staging" },
   env: { region: "us-west-2" },
   tags: {
     project: "Gauntlet BP Tracker",
@@ -22,17 +17,17 @@ const bucketProps: Buckets.Props = {
   },
   description: "S3 Buckets"
 };
-new Buckets.Stack(app, "gauntlet-bp-tracker-buckets", bucketProps);
+new Buckets.Stack(app, "gauntlet-bp-tracker-staging-buckets", stageBucketProps);
 
-const pipelineProps: Pipeline.Props = {
+const stagePipeProps: Pipeline.Props = {
   github: {
     owner: "jasonwong26",
     repository: "gauntlet-bp-tracker",
     branch: "Staging"
   },
-  artifacts: { s3BucketName: "gauntlet-bp-tracker-pipeline-artifacts" },
+  artifacts: { s3BucketName: stageBucketProps.artifacts.s3BucketName },
   ui: { 
-    s3BucketName: "gauntlet-bp-tracker-ui-staging",
+    s3BucketName: stageBucketProps.ui.s3BucketName,
     buildCommand: "build:staging"
    },
   api: { 
@@ -48,6 +43,44 @@ const pipelineProps: Pipeline.Props = {
   },
   description: "Deployment stack"
 };
-new Pipeline.Stack(app, "gauntlet-bp-tracker-pipeline", pipelineProps);
+new Pipeline.Stack(app, "gauntlet-bp-tracker-staging-pipeline", stagePipeProps);
+
+
+const prodBucketProps: Buckets.Props = {
+  artifacts: { s3BucketName: "gauntlet-bp-tracker-prod-pipeline-artifacts" },
+  ui: { s3BucketName: "gauntlet-bp-tracker-ui" },
+  env: { region: "us-west-2" },
+  tags: {
+    project: "Gauntlet BP Tracker",
+    stage: "Prod"
+  },
+  description: "S3 Buckets"
+};
+new Buckets.Stack(app, "gauntlet-bp-tracker-prod-buckets", prodBucketProps);
+
+const prodPipeProps: Pipeline.Props = {
+  github: {
+    owner: "jasonwong26",
+    repository: "gauntlet-bp-tracker"
+  },
+  artifacts: { s3BucketName: prodBucketProps.artifacts.s3BucketName },
+  ui: { 
+    s3BucketName: prodBucketProps.ui.s3BucketName,
+    buildCommand: "build:prod"
+   },
+  api: { 
+    stackName: "gauntlet-bp-tracker-api",
+    tableName: "gauntlet_bp_tracker",
+    stage: "Prod",
+    domainName: "api.gauntlet.developermouse.com"
+  },
+  env: { region: "us-west-2" },
+  tags: {
+    project: "Gauntlet BP Tracker",
+    stage: "Prod"
+  },
+  description: "Deployment stack"
+};
+new Pipeline.Stack(app, "gauntlet-bp-tracker-prod-pipeline", prodPipeProps);
 
 app.synth();

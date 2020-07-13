@@ -8,9 +8,6 @@ export interface Props extends CDK.StackProps {
   ui: {
     s3BucketName: string
   }
-  api: {
-    s3BucketName: string
-  }
 }
 
 /* tslint:disable:no-unused-expression */
@@ -29,12 +26,8 @@ export class Stack extends CDK.Stack {
     const bucketWebsite = new S3.Bucket(this, props.ui.s3BucketName, {
       bucketName: props.ui.s3BucketName,
       websiteIndexDocument: "index.html",
+      websiteErrorDocument: "index.html",
       publicReadAccess: true      
-    });
-
-    const bucketApi = new S3.Bucket(this, props.api.s3BucketName, {
-      bucketName: props.api.s3BucketName,
-      blockPublicAccess: S3.BlockPublicAccess.BLOCK_ALL
     });
 
     new CDK.CfnOutput(this, "ArtifactsARN", {
@@ -44,14 +37,6 @@ export class Stack extends CDK.Stack {
     new CDK.CfnOutput(this, "WebsiteARN", {
       value: bucketWebsite.bucketArn,
       description: "ARN for Website bucket"
-    });
-    new CDK.CfnOutput(this, "ApiARN", {
-      value: bucketApi.bucketArn,
-      description: "ARN for Api Deployment files bucket"
-    });
-    new CDK.CfnOutput(this, "WebsiteURL", {
-      value: bucketWebsite.bucketWebsiteUrl,
-      description: "Website URL"
     });
   }
 }

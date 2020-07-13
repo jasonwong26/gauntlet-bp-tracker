@@ -42,6 +42,7 @@ export class Stack extends CDK.Stack {
 
     // AWS CodePipeline pipeline
     const pipeline = new CodePipeline.Pipeline(this, "Pipeline", {
+      pipelineName: id,
       restartExecutionOnUpdate: true,
       artifactBucket: bucketArtifacts
     });

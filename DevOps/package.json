@@ -7,9 +7,10 @@
     "lint": "tslint '**/*.ts?(x)' || exit 0",
     "lint:fix": "tslint '**/*.ts?(x)' --fix",
     "deployTable": "sh other/deploy.sh",
-    "scaffold:buckets": "cdk deploy gauntlet-bp-tracker-buckets",
-    "scaffold:pipeline": "cdk deploy gauntlet-bp-tracker-pipeline",
-    "scaffold:hosting": "cdk deploy gauntlet-bp-tracker-hosting"
+    "scaffold:stagingbuckets": "cdk deploy gauntlet-bp-tracker-staging-buckets",
+    "scaffold:stagingpipeline": "cdk deploy gauntlet-bp-tracker-staging-pipeline",
+    "scaffold:prodbuckets": "cdk deploy gauntlet-bp-tracker-prod-buckets",
+    "scaffold:prodpipeline": "cdk deploy gauntlet-bp-tracker-prod-pipeline"
   },
   "author": "",
   "license": "ISC",

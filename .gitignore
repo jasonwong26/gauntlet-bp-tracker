@@ -10,6 +10,7 @@
 /api/node_modules
 
 # builds
+/api/.env
 /api/lib
 /api/tools/deploy.sh
 
@@ -17,3 +18,4 @@
 BP_Menu.md
 DevNotes.md
 /api/dbBackup
+API/.env

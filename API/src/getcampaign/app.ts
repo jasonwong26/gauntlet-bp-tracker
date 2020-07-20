@@ -1,4 +1,4 @@
-import AWS from "aws-sdk";
+import * as AWS from "aws-sdk";
 
 import { MessageEvent, Response, Campaign, DbCampaign } from "../_types";
 

@@ -5,75 +5,51 @@ describe("mapToInput", () => {
   it("works for normal case", () => {
     const input: ConnectEvent = {
       requestContext: {
+        apiId: "8yhgex0kz2",
+        connectionId: "NlrEScxHPHcCFug=",
+        domainName: "mock.amazonaws.com",
         routeKey: "$connect",
         messageId: null,
         eventType: "CONNECT",
         extendedRequestId: "NlrESE91vHcFXDg=",
         requestTime: "04/Jun/2020:05:50:44 +0000",
         messageDirection: "IN",
-        stage: "Prod",
+        stage: "Dev",
         connectedAt: 1591249844900,
         requestTimeEpoch: 1591249844902,
-        requestId: "NlrESE91vHcFXDg=",
-        domainName: "8yhgex0kz2.execute-api.us-west-2.amazonaws.com",
-        connectionId: "NlrEScxHPHcCFug=",
-        apiId: "8yhgex0kz2"
+        requestId: "NlrESE91vHcFXDg="
       },
       isBase64Encoded: false,
-      queryStringParameters: { channel: "test_channel" }
+      queryStringParameters: { campaign: "test" }
     };
     const output: Input = mapToInput(input);
     
     const expected = {
-      action: "connect", 
-      channel: input.queryStringParameters?.channel!, 
+      endPoint: "mock.amazonaws.com/Dev",
       connectionId: "NlrEScxHPHcCFug=", 
-      endPoint: "8yhgex0kz2.execute-api.us-west-2.amazonaws.com/Prod"
+      action: "connect", 
+      campaign: "test"
     };
     expect(output).toEqual(expected);
   });
-  it("throws error on invalid input 1", () => {
+  it("throws error when missing campaign querystring", () => {
     const input: ConnectEvent = {
       requestContext: {
+        apiId: "8yhgex0kz2",
+        connectionId: "NlrEScxHPHcCFug=",
+        domainName: "mock.amazonaws.com",
         routeKey: "$connect",
         messageId: null,
         eventType: "CONNECT",
         extendedRequestId: "NlrESE91vHcFXDg=",
         requestTime: "04/Jun/2020:05:50:44 +0000",
         messageDirection: "IN",
-        stage: "Prod",
+        stage: "Dev",
         connectedAt: 1591249844900,
         requestTimeEpoch: 1591249844902,
-        requestId: "NlrESE91vHcFXDg=",
-        domainName: "8yhgex0kz2.execute-api.us-west-2.amazonaws.com",
-        connectionId: "NlrEScxHPHcCFug=",
-        apiId: "8yhgex0kz2"
+        requestId: "NlrESE91vHcFXDg="
       },
       isBase64Encoded: false
-    };
-    expect(() => {
-      mapToInput(input);
-    }).toThrow(ValidationError);
-  });
-  it("throws error on invalid input 2", () => {
-    const input: ConnectEvent = {
-      requestContext: {
-        routeKey: "$connect",
-        messageId: null,
-        eventType: "CONNECT",
-        extendedRequestId: "NlrESE91vHcFXDg=",
-        requestTime: "04/Jun/2020:05:50:44 +0000",
-        messageDirection: "IN",
-        stage: "Prod",
-        connectedAt: 1591249844900,
-        requestTimeEpoch: 1591249844902,
-        requestId: "NlrESE91vHcFXDg=",
-        domainName: "8yhgex0kz2.execute-api.us-west-2.amazonaws.com",
-        connectionId: "NlrEScxHPHcCFug=",
-        apiId: "8yhgex0kz2"
-      },
-      isBase64Encoded: false,
-      queryStringParameters: { channel: "" }
     };
     expect(() => {
       mapToInput(input);
@@ -84,20 +60,19 @@ describe("mapToInput", () => {
 describe("mapToConnection", () => {
   it("works for normal case", () => {
     const input: Input = {
-      action: "connect", 
-      channel: "channel#2", 
+      endPoint: "mock.amazonaws.com/Dev",
       connectionId: "NlrEScxHPHcCFug=", 
-      endPoint: "8yhgex0kz2.execute-api.us-west-2.amazonaws.com/Prod"
+      action: "connect", 
+      campaign: "test"
     };
 
     const output = mapToConnection(input);
 
     const expected: Connection = {
-      pk: input.channel,
+      pk: `Campaign#${input.campaign}`,
       sk: `Connection#${input.connectionId}`,
       type: "Connection",
       typeSk: input.connectionId,
-      channel: input.channel,
       connectionId: input.connectionId
     };
     expect(output).toEqual(expected);

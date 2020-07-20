@@ -51,6 +51,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
     - ConnectRoute
+    - DefaultRoute
     - DisconnectRoute
     - GetCampaignRoute
     - GetCampaignSettingsRoute
@@ -119,6 +120,46 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref OnConnectFunction
+      Principal: apigateway.amazonaws.com
+
+  DefaultRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: $default
+      AuthorizationType: NONE
+      OperationName: DefaultRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref DefaultInteg
+  DefaultInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Default Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DefaultFunction.Arn}/invocations
+  DefaultFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: default/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+  DefaultPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DefaultFunction
       Principal: apigateway.amazonaws.com
 
   DisconnectRoute:

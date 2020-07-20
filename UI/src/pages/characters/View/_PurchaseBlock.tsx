@@ -92,7 +92,7 @@ const PurchaseContainer: React.FC<ContainerProps> = ({title, defaultActive, chil
       <FontAwesome name={`chevron-${chevronDirection}`} className="float-right" />
     </Button>              
     <Collapse in={isActive}>
-      {children}
+      <>{children}</>
     </Collapse>
   </div>
   );

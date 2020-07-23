@@ -1,6 +1,6 @@
 import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
 import { buildSendService } from "../utility/SendService";
-import { MessageEvent, AsyncEventHandler } from "../_types";
+import { MessageEvent, Response } from "../_types";
 import { ValidationError } from "../shared/Errors";
 
 interface Request {
@@ -14,11 +14,13 @@ interface Output {
   message?: string
 }
 
+type AsyncEventHandler = (event: MessageEvent) => Promise<Response>;
+
 const TABLE_NAME = process.env.TABLE_NAME!;
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
-export const handler: AsyncEventHandler<MessageEvent> = async event => {
+export const handler: AsyncEventHandler = async event => {
   try {
     const output = mapToOutput(event);
     output.message = "Error: The specified action does not exist.";

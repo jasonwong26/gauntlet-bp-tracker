@@ -1,5 +1,6 @@
 import { ConnectEvent } from "../_types";
-import { Input, mapToInput, ValidationError, Connection, mapToConnection } from "./app";
+import { ValidationError } from "../shared/Errors";
+import { Input, mapToInput, Connection, mapToConnection } from "./app";
 
 describe("mapToInput", () => {
   it("works for normal case", () => {

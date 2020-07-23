@@ -1,31 +1,22 @@
-import * as AWS from "aws-sdk";
+import { QueryInput, QueryOutput, AttributeMap, DeleteItemInput } from "../utility/DbClient/_types";
+import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
+import { Event, AsyncEventHandler } from "../_types";
 
-import { Event, Response } from "../_types";
 
 interface Input {
   endPoint: string,
   connectionId: string,
   action: string
 }
-type AsyncEventHandler = (event: Event) => Promise<Response>;
-type DeleteItemInput = AWS.DynamoDB.DocumentClient.DeleteItemInput;
-type QueryInput = AWS.DynamoDB.DocumentClient.QueryInput;
-type QueryOutput = AWS.DynamoDB.DocumentClient.QueryOutput;
-type AttributeMap = AWS.DynamoDB.DocumentClient.AttributeMap;
 
 const TABLE_NAME = process.env.TABLE_NAME!;
-const AWS_REGION = process.env.AWS_REGION!;
-
-const ddb = new AWS.DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10", 
-  region: AWS_REGION
-});
+const db = new CrudDbClient();
 
 // The $disconnect route is executed after the connection is closed.
 // The connection can be closed by the server or by the client. As the connection is already closed when it is executed, 
 // $disconnect is a best-effort event. 
 
-export const handler: AsyncEventHandler = async event => {
+export const handler: AsyncEventHandler<Event> = async event => {
   console.log("disconnecting...", { event });
 
   try {
@@ -69,7 +60,7 @@ const fetchAllConnections: (input: Input) => Promise<QueryOutput> = async input 
     }
   };
   console.log("retrieving connections...", { queryParams });
-  return await ddb.query(queryParams).promise();
+  return await db.query(queryParams);
 };
 const deleteAllConnections = (connections: QueryOutput) => {
   if(!connections?.Items) return [];
@@ -88,5 +79,5 @@ const deleteConnectionFromDb = async (item: AttributeMap) => {
     Key: keys
   };
   console.log("deleting connection...", { deleteParams });
-  await ddb.delete(deleteParams).promise();
+  await db.delete(deleteParams);
 };

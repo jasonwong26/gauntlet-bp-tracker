@@ -1,4 +1,4 @@
-import * as AWS from "aws-sdk";
+import { DynamoDB, AWSError } from "aws-sdk";
 import { GetItemInput, GetItemOutput, BatchGetItemInput, BatchGetItemOutput, QueryInput, QueryOutput, ScanInput, ScanOutput, DbOptions, DbError } from "./_types";
 
 export interface ReadOnly {
@@ -15,21 +15,22 @@ export class ReadOnlyDbClient implements ReadOnly {
     };
   }
 
-  protected readonly DynamoDb: AWS.DynamoDB.DocumentClient;
+  protected readonly DynamoDb: DynamoDB.DocumentClient;
 
   constructor(options?: DbOptions) {
     const defaults = ReadOnlyDbClient.getDefaultOptions();
     const dbOptions = {...defaults, ...options};
 
-    this.DynamoDb = new AWS.DynamoDB.DocumentClient(dbOptions);
+    this.DynamoDb = new DynamoDB.DocumentClient(dbOptions);
   }
 
   public get: ReadOnly["get"] = async params => {
     try {
       return await this.DynamoDb.get(params).promise();
     } catch (e) {
-      // if(e instanceof AWS.AWSError)
-      //   throw new DbError(e);
+      if(e instanceof AWSError) {
+        throw new DbError(e);
+      }
 
       throw e;
     }
@@ -39,7 +40,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.batchGet(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 
@@ -51,7 +52,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.query(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 
@@ -63,7 +64,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.scan(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 

@@ -27,7 +27,7 @@ export class BasicSendService implements SendService {
 
   public send:SendService["send"] = async input => {
     const api = new WebSocketApiClient(input.endPoint, this.deleteConnectionFromDatabase);
-    api.send(input);
+    await api.send(input);
   }
 
   private deleteConnectionFromDatabase: (connectionId: string) => Promise<void> = async connectionId => {

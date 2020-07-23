@@ -1,6 +1,7 @@
-import * as AWS from "aws-sdk";
-
-import { ConnectEvent, Response } from "../_types";
+import { PutItemInput } from "../utility/DbClient/_types";
+import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
+import { ConnectEvent, AsyncEventHandler } from "../_types";
+import { ValidationError } from "../shared/Errors";
 
 export interface Input {
   endPoint: string,
@@ -15,18 +16,11 @@ export interface Connection {
   typeSk: string,
   connectionId: string
 }
-type AsyncEventHandler = (event: ConnectEvent) => Promise<Response>;
-type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
 
 const TABLE_NAME = process.env.TABLE_NAME!;
-const AWS_REGION = process.env.AWS_REGION!;
+const db = new CrudDbClient();
 
-const ddb = new AWS.DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10", 
-  region: AWS_REGION
-});
-
-export const handler: AsyncEventHandler = async event => {
+export const handler: AsyncEventHandler<ConnectEvent> = async event => {
   console.log("connecting...", { event });
 
   try {
@@ -62,7 +56,7 @@ const writeToDatabase: (input: Input) => Promise<void> = async input => {
     Item: connection
   };
   console.log("writing to db...", { putParams });
-  await ddb.put(putParams).promise();
+  await db.put(putParams);
 };
 export const mapToConnection = (input: Input) => {
   const { campaign, connectionId } = input;
@@ -76,13 +70,3 @@ export const mapToConnection = (input: Input) => {
 
   return connection;
 };
-
-export class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ValidationError";
-
-    // Set the prototype explicitly.  Needed for Jest validations, etc.
-    Object.setPrototypeOf(this, ValidationError.prototype);
-  }
-}

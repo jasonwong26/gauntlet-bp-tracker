@@ -1,6 +1,8 @@
-import * as AWS from "aws-sdk";
-
-import { MessageEvent, Response, CharacterSummary, Character, PurchasedItem, DbCharacter, PurchaseAlert } from "../_types";
+import { GetItemInput, PutItemInput, QueryInput, QueryOutput } from "../utility/DbClient/_types";
+import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
+import { buildSendService } from "../utility/SendService";
+import { MessageEvent, AsyncEventHandler, CharacterSummary, Character, PurchasedItem, DbCharacter, PurchaseAlert } from "../_types";
+import { ValidationError } from "../shared/Errors";
 
 interface Request {
   action: string,
@@ -19,34 +21,23 @@ interface Input {
 interface Output extends Input {
   character?: Character
 }
-
-type AsyncEventHandler = (event: MessageEvent) => Promise<Response>;
-
-type GetItemInput = AWS.DynamoDB.DocumentClient.GetItemInput;
-type PutItemInput = AWS.DynamoDB.DocumentClient.PutItemInput;
-
-type QueryInput = AWS.DynamoDB.DocumentClient.QueryInput;
-type QueryOutput = AWS.DynamoDB.DocumentClient.QueryOutput;
-
-type DeleteItemInput = AWS.DynamoDB.DocumentClient.DeleteItemInput;
-type PostToConnectionRequest = AWS.ApiGatewayManagementApi.PostToConnectionRequest;
+interface AlertMessage extends PurchaseAlert {
+  endPoint: string,
+  connectionId: string
+}
 
 const TABLE_NAME = process.env.TABLE_NAME!;
-const AWS_REGION = process.env.AWS_REGION!;
+const db = new CrudDbClient();
+const service = buildSendService(db, TABLE_NAME);
 
-const ddb = new AWS.DynamoDB.DocumentClient({
-  apiVersion: "2012-08-10", 
-  region: AWS_REGION
-});
-
-export const handler: AsyncEventHandler = async event => {
+export const handler: AsyncEventHandler<MessageEvent> = async event => {
   console.log("appending item to character...", { event });
 
   try {
     const input = mapToInput(event);
     const character = await addItemToCharacter(input);
     const output: Output = {...input, character };
-    await sendToConnection(output);
+    await service.send(output);
 
     const alert = mapToAlert(output);
     await pushAlertToAllListeners(input, alert);
@@ -99,7 +90,7 @@ const getFromDatabase: (input: Input) => Promise<DbCharacter | undefined> = asyn
     Key: keys
   };  
   
-  const dbLog = await ddb.get(getParams).promise();
+  const dbLog = await db.get(getParams);
   if(!dbLog.Item) {
     return undefined;
   }
@@ -124,45 +115,7 @@ const saveToDatabase = async (item: DbCharacter) => {
   }; 
   
   console.log("writing to table...", { putParams });
-  await ddb.put(putParams).promise();
-};
-
-const sendToConnection: (output: Output) => Promise<void> = async output => {
-  const api = new AWS.ApiGatewayManagementApi({
-    apiVersion: "2018-11-29",
-    endpoint: output.endPoint
-  });
-  try {
-    await pushToConnection(api, output);
-  } catch (e) {
-    if (e.statusCode === 410) {
-      console.log(`Found stale connection, deleting connection: ${output.connectionId}`);
-      await deleteConnectionFromDb(output.connectionId);
-    } else {
-      throw e;
-    }
-  }
-
-};
-const pushToConnection = async (api: AWS.ApiGatewayManagementApi, output: Output) => {
-  const { action, connectionId, character } = output;
-  const model = { action, connectionId, character };
-  const data = JSON.stringify(model);
-  const postRequest: PostToConnectionRequest = {
-    ConnectionId: output.connectionId, 
-    Data: data
-  };
-  
-  await api.postToConnection(postRequest).promise();
-};
-const deleteConnectionFromDb = async (connectionId: string) => {
-  const deleteParams: DeleteItemInput = {
-    TableName: TABLE_NAME, 
-    Key: { connectionId }
-  };
-
-  console.log("deleting stale connection...", { deleteParams });
-  await ddb.delete(deleteParams).promise();
+  await db.put(putParams);
 };
 
 const mapToAlert: (output: Output) => PurchaseAlert = output => {
@@ -179,7 +132,7 @@ const mapToAlert: (output: Output) => PurchaseAlert = output => {
     character: summary,
     item: output.item
   };
-  
+
   return alert;
 };
 const pushAlertToAllListeners: (input: Input, alert: PurchaseAlert) => Promise<void> = async (input, alert) => {
@@ -202,41 +155,14 @@ const fetchAllConnections: (input: Input) => Promise<QueryOutput> = async input 
     }
   };
 
-  return await ddb.query(queryParams).promise();
+  return await db.query(queryParams);
 };
 const pushAlertToAllConnections = (connections: QueryOutput, input: Input, alert: PurchaseAlert) => {
   if(!connections?.Items) return [];
 
-  const api = new AWS.ApiGatewayManagementApi({
-    apiVersion: "2018-11-29",
-    endpoint: input.endPoint
-  });
+  const { endPoint } = input;
   return connections.Items.map(async ({ connectionId }) => {
-    try {
-      await pushAlertToConnection(api, connectionId, alert);
-    } catch (e) {
-      if (e.statusCode === 410) {
-        console.log(`Found stale connection, deleting connection: ${connectionId}`);
-        await deleteConnectionFromDb(connectionId);
-      } else {
-        throw e;
-      }
-    }
+    const alertMessage: AlertMessage = {...alert, endPoint, connectionId };
+    await service.send(alertMessage);
   });  
 };
-const pushAlertToConnection = async (api: AWS.ApiGatewayManagementApi, connectionId: string,  model: PurchaseAlert) => {
-  const data = JSON.stringify(model);
-  const postRequest: PostToConnectionRequest = {
-    ConnectionId: connectionId, 
-    Data: data
-  };
-  
-  await api.postToConnection(postRequest).promise();
-};
-
-class ValidationError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ValidationError";
-  }
-}

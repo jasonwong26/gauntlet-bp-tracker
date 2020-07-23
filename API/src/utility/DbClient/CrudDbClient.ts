@@ -1,4 +1,4 @@
-import  * as AWS from "aws-sdk";
+import { AWSError } from "aws-sdk";
 import { PutItemInput, PutItemOutput, BatchWriteItemInput, BatchWriteItemOutput, PatchItemInput, PatchItemOutput, DeleteItemInput, DeleteItemOutput, DbError } from "./_types";
 import { ReadOnly, ReadOnlyDbClient } from "./ReadOnlyDbClient";
 
@@ -14,7 +14,7 @@ export class CrudDbClient extends ReadOnlyDbClient implements Crud {
     try {
       return await this.DynamoDb.put(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 
@@ -26,7 +26,7 @@ export class CrudDbClient extends ReadOnlyDbClient implements Crud {
     try {
       return await this.DynamoDb.update(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 
@@ -38,7 +38,7 @@ export class CrudDbClient extends ReadOnlyDbClient implements Crud {
     try {
       return await this.DynamoDb.delete(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 
@@ -50,7 +50,7 @@ export class CrudDbClient extends ReadOnlyDbClient implements Crud {
     try {
       return await this.DynamoDb.batchWrite(params).promise();
     } catch (e) {
-      if(e instanceof AWS.AWSError) {
+      if(e instanceof AWSError) {
         throw new DbError(e);
       }
 

@@ -1,4 +1,4 @@
-import * as AWS from "aws-sdk";
+import { ApiGatewayManagementApi } from "aws-sdk";
 
 export interface ApiClient {
   send: (input: Input) => Promise<void>
@@ -10,16 +10,16 @@ interface Input {
   [key:string]: any 
 }
 type onStaleConnectionCallback = (connectionId: string) => Promise<void>;
-type PostToConnectionRequest = AWS.ApiGatewayManagementApi.Types.PostToConnectionRequest;
+type PostToConnectionRequest = ApiGatewayManagementApi.Types.PostToConnectionRequest;
 
 export class WebSocketApiClient implements ApiClient {
-  private api: AWS.ApiGatewayManagementApi;
+  private api: ApiGatewayManagementApi;
   private onStaleConnection: onStaleConnectionCallback | null;
 
   constructor(endPoint: string, onStaleConnection: onStaleConnectionCallback | null = null) {
     if(!endPoint) throw new Error("endPoint must be specified");
 
-    this.api = new AWS.ApiGatewayManagementApi({
+    this.api = new ApiGatewayManagementApi({
       apiVersion: "2018-11-29",
       endpoint: endPoint
     });

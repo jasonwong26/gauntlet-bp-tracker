@@ -29,6 +29,7 @@ export interface Response {
   statusCode: number 
   body: string 
 }
+export type AsyncEventHandler<TEvent extends Event> = (event: TEvent) => Promise<Response>;
 
 export interface Campaign {
   id: string,

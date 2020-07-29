@@ -10,6 +10,8 @@ const config: Configuration = {
     onconnect: "./src/onconnect/app.ts", 
     ondisconnect: "./src/ondisconnect/app.ts",
     default: "./src/default/app.ts",
+    subscribe: "./src/subscribe/app.ts",
+    unsubscribe: "./src/unsubscribe/app.ts",
     getcampaign: "./src/getcampaign/app.ts",
     getsettings: "./src/getsettings/app.ts",
     getcharacter: "./src/getcharacter/app.ts",

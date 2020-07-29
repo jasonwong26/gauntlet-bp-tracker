@@ -38,9 +38,7 @@
                         "instance-method"
                       ]
                     }],
-    "no-console": {
-      "severity": "warning"
-    },
+    "no-console": false,
     "no-debugger": {
       "severity": "warning"
     }

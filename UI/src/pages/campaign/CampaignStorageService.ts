@@ -6,6 +6,8 @@ import { Notification } from "../../components/Toast";
 type GetHandler<T> = (input: T) => void; 
 
 const actions = {
+  subscribe: "subscribe",
+  unsubscribe: "unsubscribe",
   getCampaign: "getcampaign",
   getSettings: "getcampaignsettings",
   getCharacter: "getcharacter",
@@ -14,9 +16,8 @@ const actions = {
 };
 const apiHost = process.env.REACT_APP_API_HOST!;
 
-const getEndpoint = (id: string) => {
-  console.log("test of env read:", {endpoint: `wss://${apiHost}?campaign=${id}`});
-  return `wss://${apiHost}?campaign=${id}`;
+const getEndpoint = () => {
+  return `wss://${apiHost}`;
 };
 
 export class CampaignStorageService {
@@ -25,17 +26,30 @@ export class CampaignStorageService {
 
   constructor (campaignId: string) {
     this.id = campaignId;
-    const endpoint = getEndpoint(campaignId);
+    const endpoint = getEndpoint();
     this.service = new WebSocketService(endpoint);
   }
 
   public connect = async (handler?: () => void) => {
     await this.service.onConnect(async () => {
-      !!handler && handler();
-      console.log("connected!");
+      this.subscribeToCampaign(handler);
     });
     console.log("connecting...");
-    await this.service.connect();  
+    await this.service.connect();
+  }
+  private subscribeToCampaign = async(handler?: () => void) => {
+    const eventHook: EventHandler = event => {
+      this.service.unsubscribe(actions.subscribe, eventHook);
+      console.log("...subscribed to campaign", event);
+      console.log("connected!");
+      !!handler && handler();
+    };
+    console.log("subscribing to event...");
+    await this.service.subscribe(actions.subscribe, eventHook);
+
+    const input = { action: actions.subscribe, campaign: this.id };
+    console.log("subscribing...", input);
+    await this.service.send(input);
   }
   public subscribeToAlerts = async (handler?: GetHandler<Notification>) => {
     await this.service.subscribe("additemalert", event => {

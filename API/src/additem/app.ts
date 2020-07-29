@@ -1,7 +1,7 @@
 import { GetItemInput, PutItemInput, QueryInput, QueryOutput } from "../utility/DbClient/_types";
 import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
 import { buildSendService } from "../utility/SendService";
-import { MessageEvent, AsyncEventHandler, CharacterSummary, Character, PurchasedItem, DbCharacter, PurchaseAlert } from "../_types";
+import { MessageEvent, AsyncEventHandler, CharacterSummary, Character, PurchasedItem, DbCharacter, PurchaseAlert, DbAlert } from "../_types";
 import { ValidationError } from "../shared/Errors";
 
 interface Request {
@@ -39,7 +39,9 @@ export const handler: AsyncEventHandler<MessageEvent> = async event => {
     const output: Output = {...input, character };
     await service.send(output);
 
+    console.log("sending alert to all...", { event });
     const alert = mapToAlert(output);
+    await saveAlertToDatabase(input, alert);
     await pushAlertToAllListeners(input, alert);
   } catch (err) {
     if (err instanceof ValidationError) {
@@ -129,11 +131,29 @@ const mapToAlert: (output: Output) => PurchaseAlert = output => {
   };
   const alert: PurchaseAlert = {
     action: "additemalert",
+    alertDate: new Date().getTime(),
     character: summary,
     item: output.item
   };
 
   return alert;
+};
+const saveAlertToDatabase: (input: Input, alert: PurchaseAlert) => Promise<void> = async (input, alert) => {
+  const { campaignId } = input;
+  const keys = {
+    pk: `Campaign#${campaignId}`,
+    sk: `Alert#${alert.alertDate}#Additem#${alert.item.id}`,
+    type: "Alert",
+    typeSk: `${alert.alertDate}#Additem#${alert.item.id}`
+  };
+  const item: DbAlert = { ...keys, alert };
+  const putParams: PutItemInput = { 
+    TableName: TABLE_NAME, 
+    Item: item
+  }; 
+  
+  console.log("writing to table...", { putParams });
+  await db.put(putParams);
 };
 const pushAlertToAllListeners: (input: Input, alert: PurchaseAlert) => Promise<void> = async (input, alert) => {
   const connections = await fetchAllConnections(input);

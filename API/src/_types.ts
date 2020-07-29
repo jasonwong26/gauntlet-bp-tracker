@@ -69,9 +69,15 @@ export interface DbCampaign extends DbRecord {
 export interface DbCampaignSettings extends DbRecord {
   settings: CampaignSettings
 }
-// TODO: refactor to use this
 export interface DbCharacter extends DbTypeRecord {
   character: Character
+}
+export interface DbConnection extends DbTypeRecord {
+  connectionId: string,
+  created: number
+}
+export interface DbAlert extends DbTypeRecord {
+  alert: BaseAlert
 }
 
 export interface PurchasedItem {
@@ -86,9 +92,9 @@ export interface PurchasedItem {
 
 interface BaseAlert {
   action: string,
+  alertDate: number
 }
 export interface PurchaseAlert extends BaseAlert {
-  action: string,
   character: CharacterSummary,
   item: PurchasedItem
 }

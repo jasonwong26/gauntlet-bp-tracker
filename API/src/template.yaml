@@ -42,7 +42,9 @@ Resources:
   GauntletWebSocket:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-      Name: GauntletWebSocket
+      Name: !Sub
+        - GauntletWebSocket-${StageName}
+        - { StageName: !Ref StageName }
       ProtocolType: WEBSOCKET
       RouteSelectionExpression: "$request.body.action"
       Tags:
@@ -51,8 +53,10 @@ Resources:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn:
     - ConnectRoute
-    - DefaultRoute
     - DisconnectRoute
+    - DefaultRoute
+    - SubscribeRoute
+    - UnsubscribeRoute
     - GetCampaignRoute
     - GetCampaignSettingsRoute
     - GetCharacterRoute
@@ -122,6 +126,46 @@ Resources:
       FunctionName: !Ref OnConnectFunction
       Principal: apigateway.amazonaws.com
 
+  DisconnectRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: $disconnect
+      AuthorizationType: NONE
+      OperationName: DisconnectRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref DisconnectInteg
+  DisconnectInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Disconnect Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
+  OnDisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ondisconnect/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+  OnDisconnectPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref OnDisconnectFunction
+      Principal: apigateway.amazonaws.com
+
   DefaultRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -162,30 +206,30 @@ Resources:
       FunctionName: !Ref DefaultFunction
       Principal: apigateway.amazonaws.com
 
-  DisconnectRoute:
+  SubscribeRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref GauntletWebSocket
-      RouteKey: $disconnect
+      RouteKey: subscribe
       AuthorizationType: NONE
-      OperationName: DisconnectRoute
+      OperationName: SubscribeRoute
       Target: !Join
         - '/'
         - - 'integrations'
-          - !Ref DisconnectInteg
-  DisconnectInteg:
+          - !Ref SubscribeInteg
+  SubscribeInteg:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref GauntletWebSocket
-      Description: Disconnect Integration
+      Description: Subscribe Integration
       IntegrationType: AWS_PROXY
       IntegrationUri: 
         Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${OnDisconnectFunction.Arn}/invocations
-  OnDisconnectFunction:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SubscribeFunction.Arn}/invocations
+  SubscribeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ondisconnect/
+      CodeUri: subscribe/
       Handler: app.handler
       Environment:
         Variables:
@@ -193,13 +237,65 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref TableName
-  OnDisconnectPermission:
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  SubscribePermission:
     Type: AWS::Lambda::Permission
     DependsOn:
       - GauntletWebSocket
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref OnDisconnectFunction
+      FunctionName: !Ref SubscribeFunction
+      Principal: apigateway.amazonaws.com
+
+  UnsubscribeRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: unsubscribe
+      AuthorizationType: NONE
+      OperationName: UnsubscribeRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref UnsubscribeInteg
+  UnsubscribeInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Unsubscribe Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UnsubscribeFunction.Arn}/invocations
+  UnsubscribeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: unsubscribe/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'          
+  UnsubscribePermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref UnsubscribeFunction
       Principal: apigateway.amazonaws.com
 
   GetCampaignRoute:

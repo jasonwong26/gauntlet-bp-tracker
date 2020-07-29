@@ -1,20 +1,12 @@
 import { PutItemInput } from "../utility/DbClient/_types";
 import { CrudDbClient } from "../utility/DbClient/CrudDbClient";
-import { ConnectEvent, AsyncEventHandler } from "../_types";
+import { ConnectEvent, AsyncEventHandler, DbConnection } from "../_types";
 import { ValidationError } from "../shared/Errors";
 
 export interface Input {
   endPoint: string,
   connectionId: string,
-  action: string,
-  campaign: string
-}
-export interface Connection {
-  pk: string,
-  sk: string,
-  type: string,
-  typeSk: string,
-  connectionId: string
+  action: string
 }
 
 const TABLE_NAME = process.env.TABLE_NAME!;
@@ -41,12 +33,7 @@ export const mapToInput = (event: ConnectEvent) => {
   const { connectionId, domainName, stage } = event.requestContext;
   const endPoint = `${domainName}/${stage}`;
 
-  const campaign = event.queryStringParameters?.[`campaign`];
-  if(!campaign) {
-    throw new ValidationError("missing required querystring parameter: 'campaign'");
-  }
-
-  const input: Input = { action: "connect", campaign, connectionId, endPoint };
+  const input: Input = { action: "connect", connectionId, endPoint };
   return input;
 };
 const writeToDatabase: (input: Input) => Promise<void> = async input => {
@@ -59,13 +46,14 @@ const writeToDatabase: (input: Input) => Promise<void> = async input => {
   await db.put(putParams);
 };
 export const mapToConnection = (input: Input) => {
-  const { campaign, connectionId } = input;
-  const connection: Connection = {
-    pk: `Campaign#${campaign}`,
+  const { connectionId } = input;
+  const connection: DbConnection = {
+    pk: "Connections",
     sk: `Connection#${connectionId}`,
     type: "Connection",
     typeSk: connectionId,
-    connectionId
+    connectionId,
+    created: new Date().getTime()
   };
 
   return connection;

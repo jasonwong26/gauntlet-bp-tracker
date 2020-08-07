@@ -1,5 +1,5 @@
 import React from "react";
-import { Alert, Card } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
 import { Campaign } from "../_types";
@@ -18,15 +18,40 @@ export const ViewCampaign: React.FC<Props> = ({ campaign }) => {
       <p>{campaign.description}</p>
       <hr/>
       <div className="row">
-        {!characters.length && (
-         <Alert variant="warning">No campaigns found...</Alert>
-        )}
+        <DmLink campaign={campaign} />
         {characters.length && characters.map(c => (
           <ListItem key={`character-${c.id}`} campaign={campaign} character={c} />
         ))}
       </div>
 
   </div>
+  );
+};
+
+interface DmLinkProps {
+  campaign: Campaign
+}
+
+const DmLink: React.FC<DmLinkProps> = ({ campaign }) => {
+  const url = `/campaign/${campaign.id}/dm-controls`;
+
+  return (
+    <div className="col-4">
+      <Card>
+        <LinkContainer exact to={url}>
+          <a href={url}>
+            <Card.Body>
+              <div>
+                <div>
+                  <h2 className="mb-0">DM Screen</h2>
+                  <small>Campaign Settings and Player Activity</small>
+                </div>          
+              </div>
+            </Card.Body>
+            </a>
+        </LinkContainer>  
+      </Card>
+    </div>
   );
 };
 
@@ -50,7 +75,7 @@ const ListItem: React.FC<ItemProps> = ({ campaign, character }) => {
         <LinkContainer exact to={characterUrl}>
           <a href={characterUrl}>
             <Card.Body>
-              <div className="d-flex flex-row mb-3">
+              <div className="d-flex flex-row">
                 <div className="character-portrait">
                   <div className="character-avatar" style={avatarStyle} />
                 </div>

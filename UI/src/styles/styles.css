@@ -16,6 +16,15 @@
     width: 20px;
   }
 
+/* View Activity Page */
+#campaign-activity .list-group-item:hover {
+  background-color: #32383e;
+}
+#campaign-activity .character-image {
+  height: 40px;
+  width: 40px;
+}
+
 /* View Character Page */
 .character-portrait {
   width: 60px;

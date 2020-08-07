@@ -17,6 +17,14 @@ export interface CampaignSettings extends CharactersViewTypes.Campaign {
 }
 
 export interface PurchaseAlert {
+  action: string,
+  alertDate: number,
   character: CharacterSummary,
   item: CharactersViewTypes.PurchasedItem
+}
+
+export interface AlertRequest {
+  minDate: number,
+  maxDate: number,
+  pageSize?: number
 }

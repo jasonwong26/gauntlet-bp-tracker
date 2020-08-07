@@ -16,6 +16,7 @@ const config: Configuration = {
     getsettings: "./src/getsettings/app.ts",
     getcharacter: "./src/getcharacter/app.ts",
     savecharacter: "./src/savecharacter/app.ts",
+    getnotifications: "./src/getnotifications/app.ts",
     additem: "./src/additem/app.ts",
     removeitem: "./src/removeitem/app.ts"  
   },

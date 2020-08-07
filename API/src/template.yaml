@@ -61,6 +61,7 @@ Resources:
     - GetCampaignSettingsRoute
     - GetCharacterRoute
     - SaveCharacterRoute
+    - GetNotificationsRoute
     - AddItemRoute
     - RemoveItemRoute
     Properties:
@@ -197,6 +198,12 @@ Resources:
       Policies:
       - DynamoDBCrudPolicy:
           TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
   DefaultPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
@@ -480,6 +487,52 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref SaveCharacterFunction
+      Principal: apigateway.amazonaws.com
+
+  GetNotificationsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: getnotifications
+      AuthorizationType: NONE
+      OperationName: GetNotificationsRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref GetNotificationsInteg
+  GetNotificationsInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Get Notifications Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetNotificationsFunction.Arn}/invocations
+  GetNotificationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getnotifications/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  GetNotificationsPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetNotificationsFunction
       Principal: apigateway.amazonaws.com
 
   AddItemRoute:

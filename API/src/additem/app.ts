@@ -142,9 +142,9 @@ const saveAlertToDatabase: (input: Input, alert: PurchaseAlert) => Promise<void>
   const { campaignId } = input;
   const keys = {
     pk: `Campaign#${campaignId}`,
-    sk: `Alert#${alert.alertDate}#Additem#${alert.item.id}`,
-    type: "Alert",
-    typeSk: `${alert.alertDate}#Additem#${alert.item.id}`
+    sk: `Alert#${alert.alertDate}#AddItem#${alert.item.id}`,
+    type: "Alert#AddItem",
+    typeSk: `${alert.alertDate}#AddItem#${alert.item.key}`
   };
   const item: DbAlert = { ...keys, alert };
   const putParams: PutItemInput = { 

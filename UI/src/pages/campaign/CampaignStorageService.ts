@@ -1,5 +1,5 @@
 import { EventHandler, SocketService, WebSocketService } from "../../utility";
-import { Campaign, PurchaseAlert, CampaignSettings } from "./_types";
+import { Campaign, AlertRequest, PurchaseAlert, CampaignSettings } from "./_types";
 import { Character, PurchasedItem } from "../characters/View/_types";
 import { Notification } from "../../components/Toast";
 
@@ -11,6 +11,7 @@ const actions = {
   getCampaign: "getcampaign",
   getSettings: "getcampaignsettings",
   getCharacter: "getcharacter",
+  getNotifications: "getnotifications",
   addItem: "additem",
   removeItem: "removeitem"
 };
@@ -28,6 +29,10 @@ export class CampaignStorageService {
     this.id = campaignId;
     const endpoint = getEndpoint();
     this.service = new WebSocketService(endpoint);
+  }
+
+  public isConnected = () => {
+    return this.service.isConnected();
   }
 
   public connect = async (handler?: () => void) => {
@@ -73,7 +78,7 @@ export class CampaignStorageService {
 
       const alert = event as PurchaseAlert;
       const notification: Notification = {
-        key: alert.item.key,
+        key: `${alert.alertDate}-${alert.character.id}-${alert.item.id}`,
         title: alert.character.name,
         message: `removed ${alert.item.description}`,
         imageUrl: alert.character.avatarUrl
@@ -133,6 +138,23 @@ export class CampaignStorageService {
     await this.service.send(input);
   }
 
+  public getNotifications = async (request: AlertRequest, handler: GetHandler<PurchaseAlert[]>) => {
+    const eventHook: EventHandler = event => {
+      console.log("getNotifications...", event);
+      const { alerts } = event;
+      console.log("...notifications retrieved");
+      handler(alerts);
+      console.log("...unsubscribing to event getNotifications...");
+      this.service.unsubscribe(actions.getNotifications, eventHook);
+    };
+    console.log("subscribing to event getNotifications...");
+    await this.service.subscribe(actions.getNotifications, eventHook);
+
+    const input = { action: actions.getNotifications, campaign: this.id, ...request };
+    console.log("issuing get...", input);
+    await this.service.send(input);
+  }
+
   public addItem = async(characterId: string, item: PurchasedItem, handler: GetHandler<Character>) => {
     const eventHook: EventHandler = event => {
       console.log("addItem Event...", event);
@@ -165,8 +187,6 @@ export class CampaignStorageService {
     console.log("removing item...", input);
     await this.service.send(input);    
   }
-
-
 
   public disconnect = async () => {
     this.service.onDisconnect(event => {

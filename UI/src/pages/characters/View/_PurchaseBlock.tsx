@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import FontAwesome from "react-fontawesome";
-import { Collapse, ListGroup, ListGroupItem, Button, Form, Badge } from "react-bootstrap";
+import { ListGroup, ListGroupItem, Button, Form, Badge } from "react-bootstrap";
 
 import { AppState, PurchaseItem } from "./_types";
 
@@ -87,14 +87,14 @@ const PurchaseContainer: React.FC<ContainerProps> = ({title, defaultActive, chil
 
   return (
     <div className={`purchase-block ${activeClass}`}>
-    <Button variant={buttonVariant} block className="text-left" onClick={toggleIsActive}>
-      <span>{title}</span>               
-      <FontAwesome name={`chevron-${chevronDirection}`} className="float-right" />
-    </Button>              
-    <Collapse in={isActive}>
-      <>{children}</>
-    </Collapse>
-  </div>
+      <Button variant={buttonVariant} block className="text-left" onClick={toggleIsActive}>
+        <span>{title}</span>               
+        <FontAwesome name={`chevron-${chevronDirection}`} className="float-right" />
+      </Button>              
+      {isActive && (
+        <>{children}</>
+      )}
+    </div>
   );
 };
 
@@ -162,4 +162,3 @@ const PurchaseCustom: React.FC<CustomProps> = ({ balance, defaultActive = false,
     </PurchaseContainer>
   );
 };
-

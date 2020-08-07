@@ -40,27 +40,24 @@ const ViewActivity: React.FC<ActivityProps> = ({ notifications, refreshing, fetc
   };
   const canFetchMore = lastPageSize > 0;
 
+  if(!notifications.length) {
+    return (
+      <Alert variant="warning">No notifications found...</Alert>
+    );
+  }
+
   return (
     <>
-      {!!onRefresh && (
-        <ActivityControls fetching={refreshing} triggerRefresh={triggerRefresh} />
-      )}
-      {!notifications.length && (
-        <Alert variant="warning">No notifications found...</Alert>
-      )}
-      {notifications.length && (
-        <ListGroup id="campaign-activity" variant="flush">
-          <ActivityHeader />
-          {notifications.map(n => {
-            return (
-              <PurchaseAlertItem key={`${n.action}-${n.alertDate}-${n.item.id}`} item={n} />
-            );
-          })}
-        </ListGroup>        
-      )}
-      {!!onFetch && (
-        <ButtonByState variant="dark" block disabled={!canFetchMore} status={fetching} onClick={triggerFetch}>Fetch More</ButtonByState>
-      )}
+      <ActivityControls fetching={refreshing} triggerRefresh={triggerRefresh} />
+      <ListGroup id="campaign-activity" variant="flush">
+        <ActivityHeader />
+        {notifications.map(n => {
+          return (
+            <PurchaseAlertItem key={`${n.action}-${n.alertDate}-${n.item.id}`} item={n} />
+          );
+        })}
+      </ListGroup>        
+      <ButtonByState variant="dark" block disabled={!canFetchMore} status={fetching} onClick={triggerFetch}>Fetch More</ButtonByState>
     </>
   );
 };

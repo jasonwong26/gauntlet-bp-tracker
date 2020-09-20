@@ -1,52 +1,81 @@
-import React from "react";
-import { Alert, Card } from "react-bootstrap";
+import React, { useState } from "react";
+import { Button, Card, Col, Row } from "react-bootstrap";
+import FontAwesome from "react-fontawesome";
 import { LinkContainer } from "react-router-bootstrap";
 
 import { CampaignSummary } from "../_types";
 
 interface Props {
   campaigns: CampaignSummary[]
-  onDelete?: (character: CampaignSummary) => void
+  onDelete?: (campaign: CampaignSummary) => void
 }
 
-export const List: React.FC<Props> = ({ campaigns }) => {
+export const List: React.FC<Props> = ({ campaigns, onDelete }) => {
   return (
     <>
-    <div className="container">
-      <h2>Campaigns</h2>
+      <Row>
+        <Col>
+          <h2>Campaigns</h2>
+        </Col>
+        <Col sm="auto">
+          <LinkContainer exact to="/campaign/create">
+            <a href="/campaign/create">
+              <Button variant="success"><FontAwesome name="plus" /> Create</Button>
+            </a>
+          </LinkContainer>
+        </Col>
+      </Row>
       <hr/>
-      <div className="row">
-        {!campaigns.length && (
-         <Alert variant="warning">No campaigns found...</Alert>
-        )}
+      <Row>
         {!!campaigns.length && campaigns.map(c => (
-          <ListItem key={`campaign-${c.id}`} campaign={c} />
+          <ListItem key={`campaign-${c.id}`} campaign={c} onDelete={onDelete} />
         ))}
-      </div>
-    </div>
+      </Row>
     </>
   );
 };
 
 interface ItemProps {
-  campaign: CampaignSummary
+  campaign: CampaignSummary,
+  onDelete?: (campaign: CampaignSummary) => void
 }
 
-const ListItem: React.FC<ItemProps> = ({ campaign }) => {
-  const characterUrl = `/campaign/${campaign.id}`;
-  
+const ListItem: React.FC<ItemProps> = ({ campaign, onDelete }) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const toggleIsDeleting = () => {
+    setIsDeleting(d => !d);
+  }
+  const handleDelete = () => {
+    if(!!onDelete) onDelete(campaign);
+  }
+
+  const url = `/campaign/${campaign.id}`;
+
   return (
-    <div className="col-4">
+    <Col sm={4}>
       <Card>
-        <LinkContainer exact to={characterUrl}>
-          <a href={characterUrl}>
-            <Card.Body>
-              <h2 className="mb-0">{campaign.title}</h2>
+        <Card.Title className="mb-0 text-right">
+          <Button size="sm" variant="link" title="Leave Campaign" onClick={toggleIsDeleting}><FontAwesome name="times" /></Button>
+        </Card.Title>
+        {!isDeleting && (
+          <LinkContainer exact to={url}>
+          <a href={url}>
+            <Card.Body className="pt-0">
+              <h4 className="mb-0">{campaign.title}</h4>
               <small>{campaign.author}</small>
             </Card.Body>
             </a>
         </LinkContainer>  
+        )}
+        {!!isDeleting && (
+          <Card.Body className="pt-0">
+            <p>Are you sure you want to leave this campaign?</p>
+            <Button size="sm" onClick={toggleIsDeleting}>No</Button>
+            <Button size="sm" className="ml-3" onClick={handleDelete}>Yes</Button>
+          </Card.Body>
+        )}
       </Card>
-    </div>
+    </Col>
   );
 };

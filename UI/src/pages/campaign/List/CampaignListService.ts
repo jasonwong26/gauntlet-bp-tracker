@@ -26,7 +26,21 @@ export class CampaignListService {
   private saveList = async(items: CampaignSummary[]) => {
     const key = this.getListKey();
     await this.service.save(key, items);
-  } 
+  }
+  
+  public exists = async (id: string) => {
+    const item = await this.get(id);
+
+    return !!item;
+  }
+  
+  public get = async (id: string) => {
+    const list = await this.list();
+    const index = list.findIndex(value => value.id === id);
+
+    if(index < 0) return null;
+    return list[index];
+  }
 
   public add = async (item: Campaign) => {
     const { id, title, author } = item;

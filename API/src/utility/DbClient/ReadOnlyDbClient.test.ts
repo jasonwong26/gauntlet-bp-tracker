@@ -1,7 +1,7 @@
 import {ReadOnlyDbClient} from "./ReadOnlyDbClient";
 import { DbError } from "./_types";
 
-describe("Utility - ReadOnlyDbClient", () => {
+describe.skip("Utility - ReadOnlyDbClient", () => {
   expect(process.env.AWS_REGION).toBeTruthy();
   expect(process.env.TABLE_NAME).toBeTruthy();
   const testTable = process.env.TABLE_NAME!;

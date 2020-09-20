@@ -9,7 +9,7 @@ export interface CampaignSummary {
 
 export interface Campaign extends CampaignSummary {
   description: string
-  authorEmail: string,
+  authorEmail?: string,
   characters: CharacterSummary[]
 }
 // TODO: refactor types to eliminte inheritance

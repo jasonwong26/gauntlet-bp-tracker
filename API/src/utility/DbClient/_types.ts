@@ -5,7 +5,6 @@ export type GetItemInput = DynamoDB.DocumentClient.GetItemInput;
 export type GetItemOutput = DynamoDB.DocumentClient.GetItemOutput;
 export type AttributeMap = DynamoDB.DocumentClient.AttributeMap;
 
-
 export type BatchGetItemInput = DynamoDB.DocumentClient.BatchGetItemInput;
 export type BatchGetItemOutput = DynamoDB.DocumentClient.BatchGetItemOutput;
 

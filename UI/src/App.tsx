@@ -6,7 +6,7 @@ import { History } from "history";
 import { Header } from "./components/Header";
 import { Home } from "./pages/Home";
 
-import { JoinCampaign, ViewCampaign, CampaignsList, ViewCharacter, ViewDmPage } from "./pages/campaign";
+import { CreateCampaign, JoinCampaign, ViewCampaign, CampaignsList, ViewCharacter, ViewDmPage } from "./pages/campaign";
 import { CreatePage, ListPage, ViewPage } from "./pages/characters";
 import { ChatPage } from "./pages/chat/ChatPage";
 import { NotFound } from "./pages/errors";
@@ -25,6 +25,7 @@ const App: React.FC<Props> = ({title, history}) => (
         <Route exact path="/" component={Home} />
 
         {/* Campaign Pages */}
+        <Route exact path="/campaign/create" component={CreateCampaign} />
         <Route exact path="/campaign/" component={CampaignsList} />
         <Route exact path="/campaign/:id" component={ViewCampaign} />
         <Route exact path="/campaign/:id/join" component={JoinCampaign} />

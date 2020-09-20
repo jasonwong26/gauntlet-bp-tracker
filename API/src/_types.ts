@@ -36,7 +36,7 @@ export interface Campaign {
   title: string,
   author: string,
   description: string
-  authorEmail: string,
+  authorEmail?: string,
   characters: CharacterSummary[]
 }
 export interface CharacterSummary {
@@ -63,10 +63,10 @@ interface DbTypeRecord extends DbRecord {
   type: string,
   typeSk: string
 }
-export interface DbCampaign extends DbRecord {
+export interface DbCampaign extends DbTypeRecord {
   campaign: Campaign
 }
-export interface DbCampaignSettings extends DbRecord {
+export interface DbCampaignSettings extends DbTypeRecord {
   settings: CampaignSettings
 }
 export interface DbCharacter extends DbTypeRecord {
@@ -93,6 +93,9 @@ export interface PurchasedItem {
 interface BaseAlert {
   action: string,
   alertDate: number
+}
+export interface ActionAlert extends BaseAlert {
+  description: string
 }
 export interface PurchaseAlert extends BaseAlert {
   character: CharacterSummary,

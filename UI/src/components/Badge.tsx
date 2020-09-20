@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import FontAwesome from "react-fontawesome";
-import { Button } from "react-bootstrap";
+import { Badge } from "react-bootstrap";
 
 import { TransactionStatus, TransactionState } from "../shared/TransactionStatus";
 
-interface ButtonByStateProps {
+interface BadgeByStateProps {
   status: TransactionStatus,
   icon?: string,
-  onClick?: () => void,
   [key: string]: any
 }
 
 interface VariableProps { [key: string]: any }
 
-export const ButtonByState: React.FC<ButtonByStateProps> = ({ status, icon, onClick, children, ...rest }) => {
+export const BadgeByState: React.FC<BadgeByStateProps> = ({ status, icon, children, ...rest }) => {
   const [displayState, setDisplayState] = useState<TransactionState>(status.state);
   const [delay, setDelay] = useState<NodeJS.Timeout | null>(null);
 
@@ -42,12 +41,6 @@ export const ButtonByState: React.FC<ButtonByStateProps> = ({ status, icon, onCl
       setDisplayState(status.state);
       return;
     }
-
-    return () => {
-      if(!delay) return;
-      clearTimeout(delay);
-    };
-
   }, [status, displayState, delay]);
 
   // Teardown
@@ -55,29 +48,28 @@ export const ButtonByState: React.FC<ButtonByStateProps> = ({ status, icon, onCl
     return () => setDelay(null);
   }, []);
 
-  const buttonProps: VariableProps = {...rest};
+  const badgeProps: VariableProps = {...rest};
   const imageProps: FontAwesome.FontAwesomeProps = { name: icon ?? "" };
 
   if (displayState === TransactionState.PENDING) {
-    buttonProps.disabled = true;
     imageProps.spin = true;
     imageProps.name = "refresh";
   }
   if (displayState === TransactionState.SUCCESS) {
-    buttonProps.variant = "success";
+    badgeProps.variant = "success";
     imageProps.name = "check";
   } 
   
   if (displayState === TransactionState.ERRORED) {
-    buttonProps.variant = "danger";
+    badgeProps.variant = "danger";
     imageProps.name = "times";
   } 
   
   return (
-    <Button {...buttonProps} onClick={onClick}>
+    <Badge {...badgeProps}>
       {children}
       {imageProps.name && (
         <FontAwesome className="ml-1" {...imageProps} />
       )}
-    </Button>);
+    </Badge>);
 };

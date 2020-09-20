@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 
 import { LoadingByState } from "../../../../components/Loading";
-import { CampaignStorageService } from "../../CampaignStorageService";
+import { CampaignStorageService2 } from "../../CampaignStorageService2";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../../shared/TransactionStatus";
 import { CampaignSettings } from "../../_types";
 
 interface Props {
-  service: CampaignStorageService,
-  children: (settings: CampaignSettings) => React.ReactNode
+  service: CampaignStorageService2,
+  children: (settings: CampaignSettings, saving: TransactionStatus, onSave: onSave) => React.ReactNode
 }
+type onSave = (settings: CampaignSettings) => void;
 
 export const Container: React.FC<Props> = ({ service, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
+  const [saving, setSaving] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
   const [settings, setSettings] = useState<CampaignSettings>();
 
   // Run onMount
@@ -19,16 +21,29 @@ export const Container: React.FC<Props> = ({ service, children }) => {
     const connected = service.isConnected();
     if(!connected) return;
 
-    setLoading(buildStatus(TransactionState.PENDING));
-    service.getSettings(s => {
+    const getSettings = async () => {
+      setLoading(buildStatus(TransactionState.PENDING));
+      const s = await service.getSettings();
       setSettings(s);
       setLoading(buildStatus(TransactionState.SUCCESS));
-    });
+    }
+
+    getSettings();
   }, [service]);
-  
+
+  const onSave: onSave = settings => {
+    const saveSettings = async (settings: CampaignSettings) => {
+      const updated = await service.saveSettings(settings);
+      setSettings(updated);
+      setSaving(buildStatus(TransactionState.SUCCESS));
+    }
+
+    saveSettings(settings);
+  };
+
   return (
     <LoadingByState status={loading}>
-      {settings && children(settings)}
+      {children(settings!, saving, onSave)}
     </LoadingByState>
   );
 };

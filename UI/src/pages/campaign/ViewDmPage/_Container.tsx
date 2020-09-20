@@ -1,40 +1,68 @@
 import React, { useState, useEffect } from "react";
+import { Alert } from "react-bootstrap";
 
-import { Loading } from "../../../components/Loading";
+import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
-import { CampaignStorageService } from "../CampaignStorageService";
+import { buildStatus, TransactionState, TransactionStatus } from "../../../shared/TransactionStatus";
+import { CampaignSummary } from "../_types";
+import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { LocalStorageService } from "../../../utility";
+import { CampaignListService } from "../List/CampaignListService";
 
 interface Props {
   campaignId: string
   children: (
-    service: CampaignStorageService,
+    service: CampaignStorageService2,
+    listService: CampaignListService,
     toasts: Notification[],
     onToastClose: (notification: Notification) => void) 
     => React.ReactNode
 }
 
 export const Container: React.FC<Props> = ({ campaignId, children }) => {
-  const [service, setService] = useState<CampaignStorageService>();
-  const [connected, setConnected] = useState<boolean>(false);
+  const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
+  const [listService, setListService] = useState<CampaignListService>();
+  const [service, setService] = useState<CampaignStorageService2>();
+  const [campaign, setCampaign] = useState<CampaignSummary>();
   const [toasts, setToasts] = useState<Notification[]>([]);
 
   // Run onMount
   useEffect(() => {
-    const svc = new CampaignStorageService(campaignId);
-    svc.connect(() => setConnected(true));
-    setService(svc);
+    const local = new LocalStorageService();
+    const lsvc = new CampaignListService(local);
+    const svc = new CampaignStorageService2();
 
-    svc.subscribeToAlerts(notification => {
-      setToasts(ts => {
-        return [...ts, notification];
-      });
-    });
+    setLoading(buildStatus(TransactionState.PENDING));
+    const connect = async () => {
+      try {
+        setService(svc);
+        setListService(lsvc);
+
+        const campaignSummary = await lsvc.get(campaignId);
+        if(!!campaignSummary) {
+          setCampaign(campaignSummary);
+
+          await svc.connect(campaignId);  
+          svc.subscribeToAlerts(notification => {
+            setToasts(ts => {
+              return [...ts, notification];
+            });
+          });
+        }
+  
+        setLoading(buildStatus(TransactionState.SUCCESS));  
+      } catch(error) {
+        setLoading(buildStatus(TransactionState.ERRORED, error));
+      }
+    }
+
+    connect();
 
     // Cleanup method
     return () => {
-      svc.disconnect();
-      setConnected(false);
+      svc?.disconnect();
       setService(undefined);
+      setListService(undefined);
     };
   }, [campaignId]);
   
@@ -49,11 +77,11 @@ export const Container: React.FC<Props> = ({ campaignId, children }) => {
   };
 
   return (
-      <>
-        {!connected && (
-          <Loading />
+      <LoadingByState status={loading}>
+        {!campaign && (
+          <Alert variant="warning">Campaign not found...</Alert>
         )}
-        {!!service && connected && children(service, toasts, onToastClose)}
-      </>
+        {!!campaign && !!service && children(service, listService!, toasts, onToastClose)}
+      </LoadingByState>
   );
 };

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 
 import {LocalStorageService } from "../../../utility";
 import { CampaignListService } from "./CampaignListService";
-import { Campaign, CampaignSummary } from "../_types";
+import { CampaignSummary } from "../_types";
 
 interface Props {
-  children: (campaigns: CampaignSummary[], onDelete: (campaign: Campaign) => void) => React.ReactNode
+  children: (campaigns: CampaignSummary[], onDelete: (campaign: CampaignSummary) => void) => React.ReactNode
 }
 
 export const Container: React.FC<Props> = ({ children }) => {

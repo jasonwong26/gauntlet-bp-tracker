@@ -3,13 +3,13 @@ import { Alert, Row, Col, ListGroup } from "react-bootstrap";
 
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
 import { ButtonByState } from "../../../../components/Button";
-import { CampaignStorageService } from "../../CampaignStorageService";
+import { CampaignStorageService2 } from "../../CampaignStorageService2";
 import { PurchaseAlert } from "../../_types";
 
 import { Container } from "./_Container";
 
 interface Props {
-  service: CampaignStorageService
+  service: CampaignStorageService2
 }
 
 export const View: React.FC<Props> = ({ service }) => (
@@ -40,18 +40,15 @@ const ViewActivity: React.FC<ActivityProps> = ({ notifications, refreshing, fetc
   };
   const canFetchMore = lastPageSize > 0;
 
-  if(!notifications.length) {
-    return (
-      <Alert variant="warning">No notifications found...</Alert>
-    );
-  }
-
   return (
     <>
       <ActivityControls fetching={refreshing} triggerRefresh={triggerRefresh} />
       <ListGroup id="campaign-activity" variant="flush">
         <ActivityHeader />
-        {notifications.map(n => {
+        {!notifications.length && (
+          <Alert variant="warning">No notifications found...</Alert>
+        )}
+        {!!notifications.length && notifications.map(n => {
           return (
             <PurchaseAlertItem key={`${n.action}-${n.alertDate}-${n.item.id}`} item={n} />
           );
@@ -70,7 +67,7 @@ interface ActivityControlsProps {
 const ActivityControls: React.FC<ActivityControlsProps> = ({ fetching, triggerRefresh }) => (
   <Row>
     <Col className="text-right mb-2">
-    <ButtonByState variant="info" className="text-left" status={fetching} icon="refresh" onClick={triggerRefresh}>Refresh</ButtonByState>
+      <ButtonByState variant="info" className="text-left" size="sm" status={fetching} icon="refresh" onClick={triggerRefresh}>Refresh</ButtonByState>
     </Col>
   </Row>
 );
@@ -106,7 +103,7 @@ const PurchaseAlertItem: React.FC<PurchaseAlertItemProps> = ({ item }) => {
 
   const action = item.action === "additemalert" ? "added" : "removed";
   const itemDescription = item.item.description;
-  const description = `${action} ${itemDescription}`
+  const description = `${action} ${itemDescription}`;
   const symbol = item.action === "additemalert" ? "+" : "-";
   const amount = item.item.points * (item.item.points < 0 ? -1 : 1);
 

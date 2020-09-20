@@ -143,12 +143,12 @@ const PurchaseCustom: React.FC<CustomProps> = ({ balance, defaultActive = false,
   return (
     <PurchaseContainer title="Custom" defaultActive={defaultActive}>
       <Form className="custom-item-form mt-2" onSubmit={onSubmit}>
-        <Form.Group controlId="item-description">
+        <Form.Group>
           <Form.Label>Description</Form.Label>
           <Form.Control required type="text" value={description} onChange={updateDescription} />
         </Form.Group>
 
-        <Form.Group controlId="formBasicPassword">
+        <Form.Group>
           <Form.Label>Points</Form.Label>
           <Form.Control required type="number" step="1" min="-10000" max="10000" value={pointsInput} onChange={updatePoints} />
         </Form.Group>

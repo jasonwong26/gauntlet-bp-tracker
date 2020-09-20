@@ -2,15 +2,27 @@ import { EventHandler, SocketService, WebSocketService } from "../../utility";
 import { Campaign, AlertRequest, PurchaseAlert, CampaignSettings } from "./_types";
 import { Character, PurchasedItem } from "../characters/View/_types";
 import { Notification } from "../../components/Toast";
+import { CharacterSummary } from "../characters/_types";
 
-type GetHandler<T> = (input: T) => void; 
+
+interface Input {
+  action: string,
+  campaign: string,
+  [key: string]: any
+}
+type EventMapper<T> = (event: { [key: string]: any }) => T;
+type SuccessHandler<T> = (input: T) => void; 
 
 const actions = {
   subscribe: "subscribe",
   unsubscribe: "unsubscribe",
   getCampaign: "getcampaign",
+  updateCampaign: "updatecampaign",
   getSettings: "getcampaignsettings",
+  saveSettings: "savecampaignsettings",
   getCharacter: "getcharacter",
+  saveCharacter: "savecharacter",
+  deleeteCharacter: "deletecharacter",
   getNotifications: "getnotifications",
   addItem: "additem",
   removeItem: "removeitem"
@@ -56,7 +68,7 @@ export class CampaignStorageService {
     console.log("subscribing...", input);
     await this.service.send(input);
   }
-  public subscribeToAlerts = async (handler?: GetHandler<Notification>) => {
+  public subscribeToAlerts = async (handler?: SuccessHandler<Notification>) => {
     await this.service.subscribe("additemalert", event => {
       console.log("Add Item Alert...", { event });
     
@@ -87,7 +99,7 @@ export class CampaignStorageService {
     });
   }
 
-  public getCampaign = async (handler: GetHandler<Campaign>) => {
+  public getCampaign = async (handler: SuccessHandler<Campaign>) => {
     const eventHook: EventHandler = event => {
       console.log("getCampaign...", event);
       const { campaign } = event;
@@ -103,8 +115,20 @@ export class CampaignStorageService {
     console.log("issuing get...", input);
     await this.service.send(input);
   }
+  public updateCampaign = async (campaign: Campaign, handler: SuccessHandler<Campaign>) => {
+    const eventHook: EventHandler = event => {
+      const { metadata: campaign } = event;
+      console.log("...campaign updated", campaign);
+      handler(campaign);
+      this.service.unsubscribe(actions.updateCampaign, eventHook);
+    };
+    await this.service.subscribe(actions.updateCampaign, eventHook);
 
-  public getSettings = async (handler: GetHandler<CampaignSettings>) => {
+    const input = { action: actions.updateCampaign, campaign: this.id,  metadata: campaign };
+    console.log("updating campaign...", input);
+    await this.service.send(input);
+  }
+  public getSettings = async (handler: SuccessHandler<CampaignSettings>) => {
     const eventHook: EventHandler = event => {
       console.log("getSettings...", event);
       const { settings } = event;
@@ -120,8 +144,21 @@ export class CampaignStorageService {
     console.log("issuing get...", input);
     await this.service.send(input);
   }
+  public saveSettings = async (settings: CampaignSettings, handler: SuccessHandler<CampaignSettings>) => {
+    const eventHook: EventHandler = event => {
+      const { settings } = event;
+      console.log("...settings saved", settings);
+      handler(settings);
+      this.service.unsubscribe(actions.saveSettings, eventHook);
+    };
+    await this.service.subscribe(actions.saveSettings, eventHook);
 
-  public getCharacter = async (id: string, handler: GetHandler<Character>) => {
+    const input = { action: actions.saveSettings, campaign: this.id,  settings };
+    console.log("saving settings...", input);
+    await this.service.send(input);
+  }
+
+  public getCharacter = async (id: string, handler: SuccessHandler<Character>) => {
     const eventHook: EventHandler = event => {
       console.log("getCharacter...", event);
       const { character } = event;
@@ -137,8 +174,61 @@ export class CampaignStorageService {
     console.log("issuing get...", input);
     await this.service.send(input);
   }
+  public saveCharacter = async (character: CharacterSummary) => {
+    const input = { action: actions.saveCharacter, campaign: this.id,  character };
+    const mapper: EventMapper<CharacterSummary> = event => {
+      const { character } = event;
+      return character;
+    }
 
-  public getNotifications = async (request: AlertRequest, handler: GetHandler<PurchaseAlert[]>) => {
+    return await this.executeAction(input, mapper);
+  }
+  public deleteCharacter = async (character: CharacterSummary) => {
+    const input = { action: actions.deleeteCharacter, campaign: this.id,  character };
+    const mapper: EventMapper<CharacterSummary> = event => {
+      const { character, status } = event;
+      if(status !== "deleted")
+        throw new Error("The character was not deleted!");
+
+      return character;
+    }
+
+    return await this.executeAction(input, mapper);
+  }
+  executeAction = async <T>(input: Input, mapper: EventMapper<T>) => {
+    const successPromise = new Promise<T>((resolve, reject) => {
+      const eventHook: EventHandler = event => {
+        try {
+          const output = mapper(event);
+
+          console.log(`action completed: ${input.action}...`, event);
+          this.service.unsubscribe(input.action, eventHook);
+          resolve(output);
+
+        } catch(error) {
+          reject(error);
+        }
+      };
+
+      this.service.subscribe(input.action, eventHook);
+    });
+    const errorPromise = this.sleep<T>(20 * 1000, () => {
+      throw new Error("Server not responding!");
+    })
+
+    console.log(`triggering action: ${input.action}...`, input);
+    await this.service.send(input);
+    return await Promise.race([successPromise, errorPromise]);
+  }
+  sleep = async <T>(ms: number, fn: Function, ...args: any[]) => {
+    await this.timeout(ms);
+    return fn(...args) as T;
+  }
+  timeout = (ms: number) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  public getNotifications = async (request: AlertRequest, handler: SuccessHandler<PurchaseAlert[]>) => {
     const eventHook: EventHandler = event => {
       console.log("getNotifications...", event);
       const { alerts } = event;
@@ -155,7 +245,7 @@ export class CampaignStorageService {
     await this.service.send(input);
   }
 
-  public addItem = async(characterId: string, item: PurchasedItem, handler: GetHandler<Character>) => {
+  public addItem = async(characterId: string, item: PurchasedItem, handler: SuccessHandler<Character>) => {
     const eventHook: EventHandler = event => {
       console.log("addItem Event...", event);
       const { character } = event;
@@ -171,7 +261,7 @@ export class CampaignStorageService {
     console.log("adding item...", input);
     await this.service.send(input);
   }
-  public removeItem = async(characterId: string, item: PurchasedItem, handler: GetHandler<Character>) => {
+  public removeItem = async(characterId: string, item: PurchasedItem, handler: SuccessHandler<Character>) => {
     const eventHook: EventHandler = event => {
       console.log("removeItem Event...", event);
       const { character } = event;

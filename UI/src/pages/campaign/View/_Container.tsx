@@ -3,47 +3,77 @@ import React, { useState, useEffect } from "react";
 import { LoadingByState } from "../../../components/Loading";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
 import { Campaign } from "../_types";
-import { CampaignStorageService } from "../CampaignStorageService";
+import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { CampaignListService } from "../List/CampaignListService";
+import { LocalStorageService } from "../../../utility";
+import { Redirect } from "react-router";
 
 interface Props {
   id: string
-  children: (campaign?: Campaign) 
-    => React.ReactNode
+  children: (
+    campaign: Campaign,
+    onLeave: () => void
+  ) => React.ReactNode
 }
 
 export const Container: React.FC<Props> = ({ id, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
-  const [service, setService] = useState<CampaignStorageService>();
-  const [connected, setConnected] = useState<boolean>(false);
+  const [listService, setListService] = useState<CampaignListService>();
+  const [service, setService] = useState<CampaignStorageService2>();
   const [campaign, setCampaign] = useState<Campaign>();
+  const [redirect, setRedirect] = useState<boolean>(false);
 
   // Run onMount
   useEffect(() => {
     setLoading(buildStatus(TransactionState.PENDING));
 
-    const svc = new CampaignStorageService(id);
-    svc.connect(() => setConnected(true));
+    const local = new LocalStorageService();
+    const lsvc = new CampaignListService(local);
+    setListService(lsvc);
+
+    const svc = new CampaignStorageService2();
     setService(svc);
 
     // Cleanup method
     return () => {
       svc.disconnect();
       setService(undefined);
+      setListService(undefined);
     };
   }, [id]);
 
   useEffect(() => {
-    if(!service || !connected) return;
+    if(!service || !listService) return;
 
-    service.getCampaign(c => {
-      setCampaign(c);
-      setLoading(buildStatus(TransactionState.SUCCESS));
-    });
-  }, [id, service, connected]);
+    const connect = async () => {
+      try {
+        const campaignExists = await listService.exists(id);
+        if(campaignExists) {  
+          await service.connect(id);
+          const c = await service.getCampaign(id);
+          setCampaign(c);  
+        } 
+  
+        setLoading(buildStatus(TransactionState.SUCCESS));
+      } catch(err){
+        setLoading(buildStatus(TransactionState.ERRORED, err));
+      }
+    }
+    connect();
+  }, [id, service, listService]);
+
+  const onLeave = () => {
+    if(!listService || !campaign) return;
+    listService.remove(campaign.id);
+    setRedirect(true);
+  }
 
   return (
     <LoadingByState status={loading}>
-      { children(campaign) }
+      { !redirect && children(campaign!, onLeave) }
+      { !!redirect && (
+        <Redirect to="/campaign" />
+      ) }
     </LoadingByState>
   );
 };

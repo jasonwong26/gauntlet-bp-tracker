@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Navbar, Nav, NavDropdown } from "react-bootstrap";
+import { Navbar, Nav } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { Link } from "react-router-dom";
 
@@ -21,24 +21,9 @@ export const Header: React.FC<Props> = ({title}) => (
       <Navbar.Toggle />
       <Navbar.Collapse className="justify-content-end">
         <Nav>
-          <LinkContainer exact to="/">
-            <Nav.Link href="/">Home Page</Nav.Link>
+          <LinkContainer to="/campaign/">
+            <Nav.Link href="/campaign/">My Campaigns</Nav.Link>
           </LinkContainer>
-
-          <NavDropdown id="" title="Campaign Pages">
-          <LinkContainer exact to="/campaign/">
-              <Nav.Link href="/campaign/">View Campaigns</Nav.Link>
-            </LinkContainer>
-          </NavDropdown>
-
-          <NavDropdown id="" title="Character Pages">
-            <LinkContainer exact to="/character">
-              <Nav.Link href="/character">View Characters</Nav.Link>
-            </LinkContainer>
-            <LinkContainer exact to="/character/create">
-              <Nav.Link href="/character/create">Create Character</Nav.Link>
-            </LinkContainer>
-          </NavDropdown>
         </Nav>
       </Navbar.Collapse>
       </div>

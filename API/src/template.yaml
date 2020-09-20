@@ -58,12 +58,17 @@ Resources:
     - SubscribeRoute
     - UnsubscribeRoute
     - GetCampaignRoute
+    - CreateCampaignRoute
+    - UpdateCampaignRoute
+    - DeleteCampaignRoute
     - GetCampaignSettingsRoute
+    - SaveCampaignSettingsRoute
     - GetCharacterRoute
     - SaveCharacterRoute
-    - GetNotificationsRoute
+    - DeleteCharacterRoute
     - AddItemRoute
     - RemoveItemRoute
+    - GetNotificationsRoute
     Properties:
       ApiId: !Ref GauntletWebSocket
   Stage:
@@ -73,8 +78,8 @@ Resources:
       Description: !Sub
         - ${StageName} Stage
         - { StageName: !Ref StageName }
-      DeploymentId: !Ref Deployment
       ApiId: !Ref GauntletWebSocket
+      AutoDeploy: true
       Tags:
         project: Gauntlet BP Tracker
         stage: !Ref StageName
@@ -351,6 +356,144 @@ Resources:
       FunctionName: !Ref GetCampaignFunction
       Principal: apigateway.amazonaws.com
 
+  CreateCampaignRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: createcampaign
+      AuthorizationType: NONE
+      OperationName: CreateCampaignRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref CreateCampaignInteg
+  CreateCampaignInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Create Campaign Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateCampaignFunction.Arn}/invocations
+  CreateCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: createcampaign/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  CreateCampaignPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref CreateCampaignFunction
+      Principal: apigateway.amazonaws.com
+
+  UpdateCampaignRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: updatecampaign
+      AuthorizationType: NONE
+      OperationName: UpdateCampaignRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref UpdateCampaignInteg
+  UpdateCampaignInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Update Campaign Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateCampaignFunction.Arn}/invocations
+  UpdateCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updatecampaign/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  UpdateCampaignPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref UpdateCampaignFunction
+      Principal: apigateway.amazonaws.com
+
+  DeleteCampaignRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: deletecampaign
+      AuthorizationType: NONE
+      OperationName: DeleteCampaignRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref DeleteCampaignInteg
+  DeleteCampaignInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Delete Campaign Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteCampaignFunction.Arn}/invocations
+  DeleteCampaignFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: deletecampaign/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  DeleteCampaignPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref DeleteCampaignFunction
+      Principal: apigateway.amazonaws.com
+
   GetCampaignSettingsRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
@@ -395,6 +538,52 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref GetCampaignSettingsFunction
+      Principal: apigateway.amazonaws.com
+
+  SaveCampaignSettingsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: savecampaignsettings
+      AuthorizationType: NONE
+      OperationName: SaveCampaignSettingsRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref SaveCampaignSettingsInteg
+  SaveCampaignSettingsInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Get Campaign Settings Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${SaveCampaignSettingsFunction.Arn}/invocations
+  SaveCampaignSettingsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: savesettings/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  SaveCampaignSettingsPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref SaveCampaignSettingsFunction
       Principal: apigateway.amazonaws.com
 
   GetCharacterRoute:
@@ -489,30 +678,30 @@ Resources:
       FunctionName: !Ref SaveCharacterFunction
       Principal: apigateway.amazonaws.com
 
-  GetNotificationsRoute:
+  DeleteCharacterRoute:
     Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref GauntletWebSocket
-      RouteKey: getnotifications
+      RouteKey: deletecharacter
       AuthorizationType: NONE
-      OperationName: GetNotificationsRoute
+      OperationName: DeleteCharacterRoute
       Target: !Join
         - '/'
         - - 'integrations'
-          - !Ref GetNotificationsInteg
-  GetNotificationsInteg:
+          - !Ref DeleteCharacterInteg
+  DeleteCharacterInteg:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref GauntletWebSocket
-      Description: Get Notifications Integration
+      Description: Delete Character Integration
       IntegrationType: AWS_PROXY
       IntegrationUri: 
         Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetNotificationsFunction.Arn}/invocations
-  GetNotificationsFunction:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteCharacterFunction.Arn}/invocations
+  DeleteCharacterFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: getnotifications/
+      CodeUri: deletecharacter/
       Handler: app.handler
       Environment:
         Variables:
@@ -526,13 +715,13 @@ Resources:
           - 'execute-api:ManageConnections'
           Resource:
           - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
-  GetNotificationsPermission:
+  DeleteCharacterPermission:
     Type: AWS::Lambda::Permission
     DependsOn:
       - GauntletWebSocket
     Properties:
       Action: lambda:InvokeFunction
-      FunctionName: !Ref GetNotificationsFunction
+      FunctionName: !Ref DeleteCharacterFunction
       Principal: apigateway.amazonaws.com
 
   AddItemRoute:
@@ -625,6 +814,52 @@ Resources:
     Properties:
       Action: lambda:InvokeFunction
       FunctionName: !Ref RemoveItemFunction
+      Principal: apigateway.amazonaws.com
+
+  GetNotificationsRoute:
+    Type: AWS::ApiGatewayV2::Route
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      RouteKey: getnotifications
+      AuthorizationType: NONE
+      OperationName: GetNotificationsRoute
+      Target: !Join
+        - '/'
+        - - 'integrations'
+          - !Ref GetNotificationsInteg
+  GetNotificationsInteg:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref GauntletWebSocket
+      Description: Get Notifications Integration
+      IntegrationType: AWS_PROXY
+      IntegrationUri: 
+        Fn::Sub:
+            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetNotificationsFunction.Arn}/invocations
+  GetNotificationsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getnotifications/
+      Handler: app.handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref TableName
+      Policies:
+      - DynamoDBCrudPolicy:
+          TableName: !Ref TableName
+      - Statement:
+        - Effect: Allow
+          Action:
+          - 'execute-api:ManageConnections'
+          Resource:
+          - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${GauntletWebSocket}/*'
+  GetNotificationsPermission:
+    Type: AWS::Lambda::Permission
+    DependsOn:
+      - GauntletWebSocket
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref GetNotificationsFunction
       Principal: apigateway.amazonaws.com
 
 Outputs:

@@ -16,6 +16,28 @@
     width: 20px;
   }
 
+/* List Group Styles */
+.list-group-nohover .list-group-item:hover {
+  background-color: #32383e;
+}
+.list-group-item-nohover:hover {
+  background-color: #32383e;
+}
+
+.list-group-borderless .list-group-item:first-child {
+  border-top-width: 0;
+}
+.list-group-borderless .list-group-item:last-child {
+  border-bottom-width: 0;
+}
+.list-group-item-borderless {
+  border-top-width: 0;
+  border-bottom-width: 0;
+}
+.list-group-horizontal.list-group-borderless .list-group-item {
+  border-width: 0;
+}
+
 /* View Activity Page */
 #campaign-activity .list-group-item:hover {
   background-color: #32383e;
@@ -23,6 +45,15 @@
 #campaign-activity .character-image {
   height: 40px;
   width: 40px;
+}
+
+/* View Settings Page */
+#campaign-settings .list-group-header:hover {
+  background-color: #32383e;
+}
+
+form.settings-form {
+  width: 100%
 }
 
 /* View Character Page */

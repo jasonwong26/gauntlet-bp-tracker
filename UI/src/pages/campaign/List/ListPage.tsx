@@ -7,9 +7,9 @@ import { List } from "./List";
 export const ListPage: React.FC<RouteComponentProps> = () => (
   <div className="container">
     <Container>
-      {campaigns => {
+      {(campaigns, onDelete) => {
         return (
-        <List campaigns={campaigns} />
+        <List campaigns={campaigns} onDelete={onDelete} />
         );
       }}
     </Container>

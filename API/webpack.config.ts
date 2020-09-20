@@ -7,18 +7,27 @@ dotenv.config();
 const config: Configuration = {
   mode: process.env.NODE_ENV === "dev" ? "development" : "production",
   entry: { 
-    onconnect: "./src/onconnect/app.ts", 
-    ondisconnect: "./src/ondisconnect/app.ts",
-    default: "./src/default/app.ts",
-    subscribe: "./src/subscribe/app.ts",
-    unsubscribe: "./src/unsubscribe/app.ts",
-    getcampaign: "./src/getcampaign/app.ts",
-    getsettings: "./src/getsettings/app.ts",
-    getcharacter: "./src/getcharacter/app.ts",
-    savecharacter: "./src/savecharacter/app.ts",
-    getnotifications: "./src/getnotifications/app.ts",
-    additem: "./src/additem/app.ts",
-    removeitem: "./src/removeitem/app.ts"  
+    onconnect: "./src/connection/connect.ts", 
+    ondisconnect: "./src/connection/disconnect.ts",
+    default: "./src/connection/default.ts",
+    subscribe: "./src/connection/subscribe.ts",
+    unsubscribe: "./src/connection/unsubscribe.ts",
+
+    getcampaign: "./src/campaign/get.ts",
+    createcampaign: "./src/campaign/create.ts",
+    updatecampaign: "./src/campaign/update.ts",
+    deletecampaign: "./src/campaign/delete.ts",
+
+    getsettings: "./src/campaignsettings/get.ts",
+    savesettings: "./src/campaignsettings/save.ts",
+
+    getcharacter: "./src/character/get.ts",
+    savecharacter: "./src/character/save.ts",
+    deletecharacter: "./src/character/delete.ts",
+    additem: "./src/character/additem.ts",
+    removeitem: "./src/character/removeitem.ts",
+
+    getnotifications: "./src/notifications/get.ts",
   },
     
   output: {

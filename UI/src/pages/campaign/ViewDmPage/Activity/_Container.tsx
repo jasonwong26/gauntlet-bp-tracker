@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+import { AlertRequest, PurchaseAlert } from "../../../../types";
 import { LoadingByState } from "../../../../components/Loading";
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../../shared/TransactionStatus";
-import { AlertRequest, PurchaseAlert } from "../../_types";
 
 interface Props {
-  service: CampaignStorageService2,
+  service: CampaignStorageService,
   children: (
     notifications: PurchaseAlert[],
     refreshing: TransactionStatus,

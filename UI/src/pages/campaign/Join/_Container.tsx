@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
+import { Campaign } from "../../../types";
 import { LoadingByState } from "../../../components/Loading";
-import { Campaign } from "../_types";
 import { CampaignListService } from "../List/CampaignListService";
-import { CampaignStorageService } from "../CampaignStorageService";
+import { CampaignStorageService } from "../CampaignStorageService2";
 import { LocalStorageService } from "../../../utility";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
 
@@ -18,35 +18,43 @@ export const Container: React.FC<Props> = ({ id, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
   const [listService, setListService] = useState<CampaignListService>();
   const [service, setService] = useState<CampaignStorageService>();
-  const [connected, setConnected] = useState<boolean>(false);
   const [campaign, setCampaign] = useState<Campaign>();
 
   // Run onMount
   useEffect(() => {
+    setLoading(buildStatus(TransactionState.PENDING));
+
     const local = new LocalStorageService();
     const lsvc = new CampaignListService(local);
     setListService(lsvc);
 
-    setLoading(buildStatus(TransactionState.PENDING));
-    const svc = new CampaignStorageService(id);
-    svc.connect(() => setConnected(true));
+    const svc = new CampaignStorageService();
     setService(svc);
 
     // Cleanup method
     return () => {
       svc.disconnect();
       setService(undefined);
+      setListService(undefined);
     };
   }, [id]);
 
   useEffect(() => {
-    if(!service || !connected) return;
+    if(!service) return;
   
-    service.getCampaign(c => {
-      setCampaign(c);
-      setLoading(buildStatus(TransactionState.SUCCESS));
-    });
-  }, [id, service, connected]);
+    const connect = async () => {
+      try {
+        await service.connect(id);
+        const c = await service.getCampaign(id);
+        setCampaign(c);  
+  
+        setLoading(buildStatus(TransactionState.SUCCESS));
+      } catch(err){
+        setLoading(buildStatus(TransactionState.ERRORED, err));
+      }
+    }
+    connect();
+  }, [id, service]);
   useEffect(() => {
     if(!listService || !campaign) return;
 

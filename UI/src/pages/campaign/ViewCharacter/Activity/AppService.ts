@@ -1,5 +1,9 @@
-import { Campaign, AppState, Encounter, PurchaseBlock, PurchaseItem, PurchasedItem, Character, HistoryTier, HistoryLevel, HistoryItem, Profile } from "./_types";
 import shortid from "shortid";
+
+import { CampaignSettings, Character, Encounter, PurchasedItem, PurchaseItem } from "../../../../types";
+import { AppState, HistoryItem, HistoryLevel, HistoryTier, PurchaseBlock } from "./_types";
+
+
 
 type GetBalance = (history: HistoryTier[], activeEncounter: Encounter) => number;
 
@@ -11,14 +15,12 @@ export interface AppService {
   getCharacter: () => Character
 }
 
-const defaultAvatarUrl = "/assets/default-avatar.png";
-
 export class CharacterAppService implements AppService {
-  campaign: Campaign;
+  campaign: CampaignSettings;
   character: Character;  
   activeEncounter: Encounter;
 
-  constructor(campaign: Campaign, character: Character) {
+  constructor(campaign: CampaignSettings, character: Character) {
     this.campaign = campaign;
     this.character = character;
     this.activeEncounter = this.getDefaultEncounter();
@@ -87,7 +89,6 @@ export class CharacterAppService implements AppService {
     const balance = this.getBalance(history, this.activeEncounter);
 
     return {
-      profile: this.buildProfile(),
       balance,
       activeEncounter: { ...this.activeEncounter },
       encounters: [ ...this.campaign.encounters ],
@@ -151,14 +152,6 @@ export class CharacterAppService implements AppService {
     const n = history[i].levels.findIndex(l => l.level === activeEncounter.level);
     
     return history[i].levels[n].endingBalance;
-  }
-  buildProfile: () => Profile = () => {
-    return {
-      name: this.character.name,
-      avatarUrl: this.character.avatarUrl || defaultAvatarUrl,
-      race: this.character.race,
-      class: this.character.class
-    };
   }
   setPurchaseBlocks: () => PurchaseBlock[] = () => {
     return [ 

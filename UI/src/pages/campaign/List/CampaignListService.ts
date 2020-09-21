@@ -1,5 +1,5 @@
+import { Campaign, CampaignSummary } from "../../../types";
 import { DataService } from "../../../utility";
-import { Campaign, CampaignSummary } from "../_types";
 
 export class CampaignListService {
   service: DataService;

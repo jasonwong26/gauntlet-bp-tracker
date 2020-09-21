@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
+import { CampaignSummary } from "../../../types";
 import {LocalStorageService } from "../../../utility";
 import { CampaignListService } from "./CampaignListService";
-import { CampaignSummary } from "../_types";
 
 interface Props {
   children: (campaigns: CampaignSummary[], onDelete: (campaign: CampaignSummary) => void) => React.ReactNode

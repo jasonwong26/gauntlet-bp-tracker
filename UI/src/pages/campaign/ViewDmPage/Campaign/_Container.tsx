@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router";
 
+import { Campaign, CharacterSummary } from "../../../../types";
 import { LoadingByState } from "../../../../components/Loading";
 import { CampaignListService } from "../../List/CampaignListService";
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../../shared/TransactionStatus";
-import { Campaign } from "../../_types";
-import { CharacterSummary } from "../../../characters/_types";
 
 interface Props {
-  service: CampaignStorageService2,
+  service: CampaignStorageService,
   listService: CampaignListService,
   children: (
     campaign: Campaign, 

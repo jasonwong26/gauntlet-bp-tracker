@@ -3,9 +3,8 @@ import { Badge, Button, ButtonGroup, Card, Col, ListGroup, Row } from "react-boo
 import { LinkContainer } from "react-router-bootstrap";
 import * as shortid from "shortid";
 
-import { Campaign } from "../_types";
-import { CharacterSummary } from "../../characters/_types";
 import { TransactionStatus } from "../../../shared/TransactionStatus";
+import { Campaign, CharacterSummary } from "../../../types";
 import { CampaignForm } from "../../../components/forms/CampaignForm";
 import { CharacterForm } from "../../../components/forms/CharacterForm";
 import FontAwesome from "react-fontawesome";

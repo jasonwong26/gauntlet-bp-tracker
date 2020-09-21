@@ -1,18 +1,16 @@
 import React, { useState } from "react";
 import { Row, Col, ListGroup, Form } from "react-bootstrap";
 import OutsideClickHandler from "react-outside-click-handler";
-
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
-import { CampaignSettings } from "../../_types";
-
-import { Container } from "./_Container";
-import { Encounter, PurchaseItem } from "../../../characters/View/_types";
 import FontAwesome from "react-fontawesome";
+
+import { CampaignSettings, Encounter, PurchaseItem } from "../../../../types";
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
 import { BadgeByState } from "../../../../components/Badge";
+import { Container } from "./_Container";
 
 interface Props {
-  service: CampaignStorageService2
+  service: CampaignStorageService
 }
 
 export const View: React.FC<Props> = ({ service }) => (

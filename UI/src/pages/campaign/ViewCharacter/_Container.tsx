@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { Alert } from "react-bootstrap";
 
+import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
 import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
-import { AppState, SetEncounter, OnPurchase, OnRemove, Character } from "../../characters/View/_types";
 import { LocalStorageService } from "../../../utility";
 import { CampaignListService } from "../List/CampaignListService";
-import { CampaignStorageService2 } from "../CampaignStorageService2";
-import { AppService, CharacterAppService } from "../../characters/View/AppService";
-import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
-import { CampaignSettings } from "../_types";
-import { Alert } from "react-bootstrap";
+import { CampaignStorageService } from "../CampaignStorageService2";
+import { AppService, CharacterAppService } from "./Activity/AppService";
+import { CampaignSettings, Character, CharacterSummary, Encounter, PurchasedItem, PurchaseItem } from "../../../types";
+import { AppState } from "./Activity/_types";
 
 interface Props {
   campaignId: string
@@ -17,16 +17,19 @@ interface Props {
   children: (
     notifications: Notification[],
     onToastClose: (notification: Notification) => void,
+    character: CharacterSummary,
+    saving: TransactionStatus,
     app?: AppState, 
-    setEncounter?: SetEncounter, 
-    onPurchase?: OnPurchase, 
-    onRemove?: OnRemove) 
-    => React.ReactNode
+    updateProfile?: (character: CharacterSummary) => void,
+    setEncounter?: (encounter: Encounter) => void, 
+    onPurchase?: (item: PurchaseItem) => void, 
+    onRemove?: (item: PurchasedItem) => void
+  ) => React.ReactNode
 }
 
 export const Container: React.FC<Props> = ({ campaignId, characterId, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
-  const [service, setService] = useState<CampaignStorageService2>();
+  const [service, setService] = useState<CampaignStorageService>();
   const [listService, setListService] = useState<CampaignListService>();
   const [isValidCampaign, setIsValidCampaign] = useState<boolean>();
   const [campaign, setCampaign] = useState<CampaignSettings>();
@@ -34,7 +37,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
   const [appService, setAppService] = useState<AppService>();
   const [appState, setAppState] = useState<AppState>();
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [, setSaveState] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
+  const [saving, setSaveState] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
 
   // Run onMount
   useEffect(() => {
@@ -44,7 +47,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     const lsvc = new CampaignListService(local);
     setListService(lsvc);
     
-    const svc = new CampaignStorageService2();
+    const svc = new CampaignStorageService();
     setService(svc);
 
     const validateCampaign = async () => {
@@ -101,12 +104,26 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     setLoading(buildStatus(TransactionState.SUCCESS));
   }, [campaign, character]);
 
-  const setEncounter: SetEncounter = encounter => {    
+  const updateProfile = (profile: CharacterSummary) => {
+    const saveTransaction = async () => {
+      try {
+        const updated = {...character!, ...profile}; 
+        setCharacter(updated)
+        setSaveState(buildStatus(TransactionState.PENDING));
+        await service?.saveCharacter(profile);
+        setSaveState(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setSaveState(buildStatus(TransactionState.ERRORED, err));  
+      }
+    }
+    saveTransaction();
+  }
+  const setEncounter = (encounter: Encounter) => {    
     appService!.setEncounter(encounter);
     const newState = appService!.getState();
     setAppState(newState);
   };
-  const onPurchase: OnPurchase = item => {
+  const onPurchase = (item: PurchaseItem) => {
     const purchased = appService!.onPurchase(item);
     const newState = appService!.getState();
     setAppState(newState);
@@ -122,7 +139,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     }
     saveTransaction();
   };
-  const onRemove: OnRemove = item => {
+  const onRemove = (item: PurchasedItem) => {
     appService!.onRemove(item);
     const newState = appService!.getState();
     setAppState(newState);    
@@ -160,7 +177,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
           <Alert variant="warning">Character not found...</Alert>
         </div>
       )}
-      { !!isValidCampaign && !!character && children(notifications, onToastClose, appState, setEncounter, onPurchase, onRemove) }
+      { !!isValidCampaign && !!character && children(notifications, onToastClose, character, saving, appState, updateProfile, setEncounter, onPurchase, onRemove) }
     </LoadingByState>
   );
 };

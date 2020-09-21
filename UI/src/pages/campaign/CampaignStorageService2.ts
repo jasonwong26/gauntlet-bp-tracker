@@ -1,9 +1,6 @@
 import { EventHandler, SocketService, WebSocketService } from "../../utility";
-import { Campaign, AlertRequest, PurchaseAlert, CampaignSettings } from "./_types";
-import { Character, PurchasedItem } from "../characters/View/_types";
 import { Notification } from "../../components/Toast";
-import { CharacterSummary } from "../characters/_types";
-
+import { AlertRequest, Campaign, CampaignSettings, Character, CharacterSummary, PurchaseAlert, PurchasedItem } from "../../types";
 
 interface BaseInput {
   action: string
@@ -34,7 +31,7 @@ const getEndpoint = () => {
   return `wss://${apiHost}`;
 };
 
-export class CampaignStorageService2 {
+export class CampaignStorageService {
   id?: string;
   service: SocketService;
 

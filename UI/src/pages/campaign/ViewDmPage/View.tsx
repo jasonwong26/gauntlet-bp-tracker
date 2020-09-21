@@ -1,13 +1,13 @@
 import React from "react";
 import { Tab, Row, Col, Nav } from "react-bootstrap";
 
-import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService2";
 import { CampaignListService } from "../List/CampaignListService";
 import { View as ViewActivity } from "./Activity/View";
 import { View as ViewCampaign } from "./Campaign/View";
 import { View as ViewSettings } from "./Settings/View";
 interface Props {
-  service: CampaignStorageService2,
+  service: CampaignStorageService,
   listService: CampaignListService,
   defaultTab?: string
 }

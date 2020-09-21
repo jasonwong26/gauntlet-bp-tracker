@@ -3,7 +3,7 @@ import { Button, Card, Col, Row } from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import { LinkContainer } from "react-router-bootstrap";
 
-import { CampaignSummary } from "../_types";
+import { CampaignSummary } from "../../../types";
 
 interface Props {
   campaigns: CampaignSummary[]

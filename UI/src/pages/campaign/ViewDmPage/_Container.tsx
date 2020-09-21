@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Alert } from "react-bootstrap";
 
+import { CampaignSummary } from "../../../types";
 import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
 import { buildStatus, TransactionState, TransactionStatus } from "../../../shared/TransactionStatus";
-import { CampaignSummary } from "../_types";
-import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService2";
 import { LocalStorageService } from "../../../utility";
 import { CampaignListService } from "../List/CampaignListService";
 
 interface Props {
   campaignId: string
   children: (
-    service: CampaignStorageService2,
+    service: CampaignStorageService,
     listService: CampaignListService,
     toasts: Notification[],
     onToastClose: (notification: Notification) => void) 
@@ -22,7 +22,7 @@ interface Props {
 export const Container: React.FC<Props> = ({ campaignId, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
   const [listService, setListService] = useState<CampaignListService>();
-  const [service, setService] = useState<CampaignStorageService2>();
+  const [service, setService] = useState<CampaignStorageService>();
   const [campaign, setCampaign] = useState<CampaignSummary>();
   const [toasts, setToasts] = useState<Notification[]>([]);
 
@@ -30,7 +30,7 @@ export const Container: React.FC<Props> = ({ campaignId, children }) => {
   useEffect(() => {
     const local = new LocalStorageService();
     const lsvc = new CampaignListService(local);
-    const svc = new CampaignStorageService2();
+    const svc = new CampaignStorageService();
 
     setLoading(buildStatus(TransactionState.PENDING));
     const connect = async () => {

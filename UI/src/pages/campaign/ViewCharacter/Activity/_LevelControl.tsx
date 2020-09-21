@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Dropdown } from "react-bootstrap";
 
-import { Encounter } from "./_types";
+import { Encounter } from "../../../../types";
 
 interface Props {
   activeEncounter: Encounter,

@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import FontAwesome from "react-fontawesome";
 import { ListGroup, ListGroupItem, Button, Form, Badge } from "react-bootstrap";
 
-import { AppState, PurchaseItem } from "./_types";
+import { PurchaseItem } from "../../../../types";
+import { AppState } from "./_types";
 
 interface Props {
   app: AppState,

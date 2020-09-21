@@ -1,15 +1,14 @@
 import React from "react";
 import { Alert, Row, Col, ListGroup } from "react-bootstrap";
 
+import { PurchaseAlert } from "../../../../types";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
 import { ButtonByState } from "../../../../components/Button";
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
-import { PurchaseAlert } from "../../_types";
-
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { Container } from "./_Container";
 
 interface Props {
-  service: CampaignStorageService2
+  service: CampaignStorageService
 }
 
 export const View: React.FC<Props> = ({ service }) => (

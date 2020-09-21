@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, Button, Row, Col } from "react-bootstrap";
 import CopyToClipboard from "react-copy-to-clipboard";
 
-import { Campaign } from "../_types";
+import { Campaign } from "../../../types";
 
 interface CampaignLinkProps {
   campaign: Campaign

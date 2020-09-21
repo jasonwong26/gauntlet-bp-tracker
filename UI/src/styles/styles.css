@@ -3,6 +3,9 @@
 .btn:disabled {
   cursor: not-allowed;
 }
+.btn-noborder {
+  border-width: 0;
+}
 
 /* Toast Styles */
 .toast-outer-container {

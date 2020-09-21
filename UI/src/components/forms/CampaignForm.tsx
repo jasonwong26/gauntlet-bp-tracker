@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { Campaign } from "../../pages/campaign/_types";
+
 import { TransactionStatus } from "../../shared/TransactionStatus";
+import { Campaign } from "../../types";
 
 interface CampaignFormProps {
   campaign?: Campaign,

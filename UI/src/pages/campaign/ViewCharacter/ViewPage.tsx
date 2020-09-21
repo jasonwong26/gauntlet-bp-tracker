@@ -16,13 +16,13 @@ export const ViewCharacterPage: React.FC<RouteComponentProps<RouteParams>> = ({ 
 
   return (
     <Container campaignId={campaignId} characterId={characterId}>
-      {(notifications, onToastClose, app, setEncounter, onPurchase, onRemove) => {
+      {(notifications, onToastClose, character, saving, app, updateProfile, setEncounter, onPurchase, onRemove) => {
         if(!app) {
           return (<Alert>Character not found</Alert>);
         } else {
           return (
             <ToastContainer notifications={notifications} onClose={onToastClose}>
-              <ViewCharacter app={app} setEncounter={setEncounter} onPurchase={onPurchase} onRemove={onRemove} />
+              <ViewCharacter character={character} saving={saving} app={app} updateProfile={updateProfile} setEncounter={setEncounter} onPurchase={onPurchase} onRemove={onRemove} />
             </ToastContainer>
           );
         }

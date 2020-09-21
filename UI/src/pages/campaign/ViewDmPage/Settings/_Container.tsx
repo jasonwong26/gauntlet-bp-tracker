@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 
+import { CampaignSettings } from "../../../../types";
 import { LoadingByState } from "../../../../components/Loading";
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../../shared/TransactionStatus";
-import { CampaignSettings } from "../../_types";
 
 interface Props {
-  service: CampaignStorageService2,
+  service: CampaignStorageService,
   children: (settings: CampaignSettings, saving: TransactionStatus, onSave: onSave) => React.ReactNode
 }
 type onSave = (settings: CampaignSettings) => void;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
-import { Campaign } from "../_types";
-import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { Campaign } from "../../../types";
+import { CampaignStorageService } from "../CampaignStorageService2";
 import { CampaignListService } from "../List/CampaignListService";
 import { LocalStorageService } from "../../../utility";
 
@@ -16,7 +16,7 @@ interface Props {
 
 export const Container: React.FC<Props> = ({ children }) => {
   const [listService, setListService] = useState<CampaignListService>();
-  const [service, setService] = useState<CampaignStorageService2>();
+  const [service, setService] = useState<CampaignStorageService>();
   const [connected, setConnected] = useState<boolean>(false);
   const [campaign, setCampaign] = useState<Campaign>();
   const [saving, setSaving] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
@@ -27,7 +27,7 @@ export const Container: React.FC<Props> = ({ children }) => {
     const lsvc = new CampaignListService(local);
     setListService(lsvc);
 
-    const svc = new CampaignStorageService2();
+    const svc = new CampaignStorageService();
     const buildService = async () => {
       setService(svc);
       await svc.connect();

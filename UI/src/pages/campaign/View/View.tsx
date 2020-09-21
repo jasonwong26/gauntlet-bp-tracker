@@ -2,8 +2,7 @@ import React from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
-import { Campaign } from "../_types";
-import { CharacterSummary } from "../../characters/_types";
+import { Campaign, CharacterSummary } from "../../../types";
 
 interface Props {
   campaign: Campaign,

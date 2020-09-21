@@ -2,10 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Card, ListGroup, Button, Row, Col, ButtonGroup, Badge } from "react-bootstrap";
 import * as shortid from "shortid";
 
-import { Campaign } from "../../_types";
-import { CharacterSummary } from "../../../characters/_types";
+import { Campaign, CharacterSummary } from "../../../../types";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
-import { CampaignStorageService2 } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService2";
 import { CampaignListService } from "../../List/CampaignListService";
 import { Container } from "./_Container";
 import { SavingDisplay } from "../../_shared/SavingDisplay";
@@ -14,7 +13,7 @@ import { CampaignForm } from "../../../../components/forms/CampaignForm";
 import { CharacterForm } from "../../../../components/forms/CharacterForm";
 
 interface Props {
-  service: CampaignStorageService2,
+  service: CampaignStorageService,
   listService: CampaignListService
 }
 

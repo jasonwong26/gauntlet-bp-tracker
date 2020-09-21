@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 
+import { Campaign } from "../../../types";
 import { LoadingByState } from "../../../components/Loading";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
-import { Campaign } from "../_types";
-import { CampaignStorageService2 } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService2";
 import { CampaignListService } from "../List/CampaignListService";
 import { LocalStorageService } from "../../../utility";
 import { Redirect } from "react-router";
@@ -19,7 +19,7 @@ interface Props {
 export const Container: React.FC<Props> = ({ id, children }) => {
   const [loading, setLoading] = useState<TransactionStatus>(buildStatus(TransactionState.INACTIVE));
   const [listService, setListService] = useState<CampaignListService>();
-  const [service, setService] = useState<CampaignStorageService2>();
+  const [service, setService] = useState<CampaignStorageService>();
   const [campaign, setCampaign] = useState<Campaign>();
   const [redirect, setRedirect] = useState<boolean>(false);
 
@@ -31,7 +31,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
     const lsvc = new CampaignListService(local);
     setListService(lsvc);
 
-    const svc = new CampaignStorageService2();
+    const svc = new CampaignStorageService();
     setService(svc);
 
     // Cleanup method

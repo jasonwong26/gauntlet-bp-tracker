@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { ListGroup, ListGroupItem, Button, Accordion, Card } from "react-bootstrap";
 
-import { PurchasedItem, HistoryTier, HistoryLevel, HistoryItem, Encounter, SetEncounter, OnRemove } from "./_types";
+import { HistoryItem, HistoryLevel, HistoryTier } from "./_types";
+import { Encounter, PurchasedItem } from "../../../../types";
 
 interface Props {
   history: HistoryTier[],
   activeEncounter: Encounter,
-  setEncounter?: SetEncounter
-  onDelete?: OnRemove 
+  setEncounter?: (encounter: Encounter) => void
+  onDelete?: (item: PurchasedItem) => void 
 }
 export const History: React.FC<Props> = ({ history, activeEncounter, ...rest }) => {
   const [activeTier, setActiveTier] = useState<number>(activeEncounter.tier);
@@ -63,7 +64,7 @@ const Tier: React.FC<TierProps> = ({ eventKey, tier, onClick, ...rest }) => {
 
 interface LevelProps {
   level: HistoryLevel,
-  setEncounter?: SetEncounter
+  setEncounter?: Props["setEncounter"]
 }
 const Level: React.FC<LevelProps> = ({ level, setEncounter, ...rest }) => {
   const onClick = () => {

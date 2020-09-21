@@ -3,8 +3,8 @@ import { Form, Button, Row, Col } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import url from "url";
 
-import { CharacterSummary } from "../../pages/characters/_types";
 import { TransactionStatus } from "../../shared/TransactionStatus";
+import { CharacterSummary } from "../../types";
 
 interface CharacterFormProps {
   character?: CharacterSummary,
@@ -58,6 +58,11 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({character = buildCh
     if(!onSave) return;
 
     const updated = { ...character, ...data };
+
+    if(!updated.avatarUrl) {
+      updated.avatarUrl = undefined;
+    }
+
     onSave(updated);
   };
   const onFailure = () => {
@@ -140,13 +145,13 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({character = buildCh
           ref={register({
             validate: validateUrl
           })} />
+        <Form.Control.Feedback type="invalid">
+          {errors.avatarUrl?.message}
+        </Form.Control.Feedback>
         <Form.Control.Feedback type="valid">
           <div className="character-portrait">
             <div className="character-avatar" style={avatarStyle} />
           </div>
-        </Form.Control.Feedback>
-        <Form.Control.Feedback type="invalid">
-          {errors.avatarUrl?.message}
         </Form.Control.Feedback>
       </Form.Group>
       <Row>

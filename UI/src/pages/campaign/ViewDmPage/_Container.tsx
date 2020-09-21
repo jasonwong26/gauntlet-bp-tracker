@@ -5,7 +5,7 @@ import { CampaignSummary } from "../../../types";
 import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
 import { buildStatus, TransactionState, TransactionStatus } from "../../../shared/TransactionStatus";
-import { CampaignStorageService } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService";
 import { LocalStorageService } from "../../../utility";
 import { CampaignListService } from "../List/CampaignListService";
 

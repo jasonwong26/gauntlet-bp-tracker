@@ -4,7 +4,7 @@ import OutsideClickHandler from "react-outside-click-handler";
 import FontAwesome from "react-fontawesome";
 
 import { CampaignSettings, Encounter, PurchaseItem } from "../../../../types";
-import { CampaignStorageService } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
 import { BadgeByState } from "../../../../components/Badge";
 import { Container } from "./_Container";

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
 import { Campaign } from "../../../types";
-import { CampaignStorageService } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService";
 import { CampaignListService } from "../List/CampaignListService";
 import { LocalStorageService } from "../../../utility";
 

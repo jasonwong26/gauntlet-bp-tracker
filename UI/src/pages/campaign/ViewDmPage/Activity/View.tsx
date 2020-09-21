@@ -4,7 +4,7 @@ import { Alert, Row, Col, ListGroup } from "react-bootstrap";
 import { PurchaseAlert } from "../../../../types";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
 import { ButtonByState } from "../../../../components/Button";
-import { CampaignStorageService } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService";
 import { Container } from "./_Container";
 
 interface Props {

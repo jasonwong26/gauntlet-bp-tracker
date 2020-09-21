@@ -4,7 +4,7 @@ import { Redirect } from "react-router";
 import { Campaign, CharacterSummary } from "../../../../types";
 import { LoadingByState } from "../../../../components/Loading";
 import { CampaignListService } from "../../List/CampaignListService";
-import { CampaignStorageService } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../../shared/TransactionStatus";
 
 interface Props {

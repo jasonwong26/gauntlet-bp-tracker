@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Campaign } from "../../../types";
 import { LoadingByState } from "../../../components/Loading";
 import { TransactionStatus, TransactionState, buildStatus } from "../../../shared/TransactionStatus";
-import { CampaignStorageService } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService";
 import { CampaignListService } from "../List/CampaignListService";
 import { LocalStorageService } from "../../../utility";
 import { Redirect } from "react-router";

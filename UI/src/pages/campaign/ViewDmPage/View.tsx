@@ -1,7 +1,7 @@
 import React from "react";
 import { Tab, Row, Col, Nav } from "react-bootstrap";
 
-import { CampaignStorageService } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService";
 import { CampaignListService } from "../List/CampaignListService";
 import { View as ViewActivity } from "./Activity/View";
 import { View as ViewCampaign } from "./Campaign/View";

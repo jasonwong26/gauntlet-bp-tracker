@@ -6,7 +6,7 @@ import { LoadingByState } from "../../../components/Loading";
 import { Notification } from "../../../components/Toast";
 import { LocalStorageService } from "../../../utility";
 import { CampaignListService } from "../List/CampaignListService";
-import { CampaignStorageService } from "../CampaignStorageService2";
+import { CampaignStorageService } from "../CampaignStorageService";
 import { AppService, CharacterAppService } from "./Activity/AppService";
 import { CampaignSettings, Character, CharacterSummary, Encounter, PurchasedItem, PurchaseItem } from "../../../types";
 import { AppState } from "./Activity/_types";

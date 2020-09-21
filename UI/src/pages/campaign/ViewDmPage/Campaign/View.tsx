@@ -4,7 +4,7 @@ import * as shortid from "shortid";
 
 import { Campaign, CharacterSummary } from "../../../../types";
 import { TransactionStatus } from "../../../../shared/TransactionStatus";
-import { CampaignStorageService } from "../../CampaignStorageService2";
+import { CampaignStorageService } from "../../CampaignStorageService";
 import { CampaignListService } from "../../List/CampaignListService";
 import { Container } from "./_Container";
 import { SavingDisplay } from "../../_shared/SavingDisplay";

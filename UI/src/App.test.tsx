@@ -6,7 +6,7 @@ import App from "./App";
 const history = createHashHistory();
 
 test("renders with placeholder", () => {
-  const { getByText } = render(<App history={history} />);
-  const linkElement = getByText(/This is a placeholder./i);
-  expect(linkElement).toBeInTheDocument();
+  const { getByText } = render(<App title="DnD Gauntlet" history={history} />);
+  const titleElement = getByText("Welcome");
+  expect(titleElement).toBeInTheDocument();
 });

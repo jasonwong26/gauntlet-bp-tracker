@@ -71,7 +71,7 @@ export class CampaignStorageService {
     });
     const errorPromise = this.sleep<void>(30 * 1000, () => {
       throw new Error("Server not responding!");
-    })
+    });
 
     console.log(`triggering action: ${input.action}...`, input);
     await this.service.send(input);
@@ -118,7 +118,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Campaign> = event => {
       const { campaign } = event;
       return campaign;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -141,7 +141,7 @@ export class CampaignStorageService {
     });
     const errorPromise = this.sleep<Toutput>(30 * 1000, () => {
       throw new Error("Server not responding!");
-    })
+    });
 
     console.log(`triggering action: ${input.action}...`, input);
     await this.service.send(input);
@@ -152,7 +152,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Campaign> = event => {
       const { campaign } = event;
       return campaign;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -161,7 +161,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Campaign> = event => {
       const { metadata: campaign } = event;
       return campaign;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -170,7 +170,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<string> = event => {
       const { status } = event;
       return status;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -179,7 +179,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<CampaignSettings> = event => {
       const { settings } = event;
       return settings;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -188,7 +188,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<CampaignSettings> = event => {
       const { settings } = event;
       return settings;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -198,7 +198,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
       return character;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -207,7 +207,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<CharacterSummary> = event => {
       const { character } = event;
       return character;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -215,11 +215,12 @@ export class CampaignStorageService {
     const input = { action: actions.deleteCharacter, campaign, character };
     const mapper: EventMapper<CharacterSummary> = event => {
       const { character, status } = event;
-      if(status !== "deleted")
+      if(status !== "deleted") {
         throw new Error("The character was not deleted!");
+      }
 
       return character;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -229,7 +230,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<PurchaseAlert[]> = event => {
       const { alerts } = event;
       return alerts;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -239,7 +240,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
       return character;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }
@@ -248,7 +249,7 @@ export class CampaignStorageService {
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
       return character;
-    }
+    };
 
     return await this.executeFunction(input, mapper);
   }

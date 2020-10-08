@@ -26,7 +26,7 @@ export const CreateCampaign: React.FC<Props> = ({ campaign, saving, onUpdate, on
   const onCampaignFormCompleted = (formData: Campaign) => {
     onUpdate(formData);
     setStep(2);
-  }
+  };
 
   const onCharacterSaved = (character: CharacterSummary) => {
     if(!campaign) return;
@@ -34,14 +34,16 @@ export const CreateCampaign: React.FC<Props> = ({ campaign, saving, onUpdate, on
     const updated = [...campaign.characters];
     const index = updated.findIndex(c => c.id === character.id);
 
-    if(index === -1) 
+    if(index === -1) { 
       updated.push(character);
-    else
+    }
+    else {
       updated.splice(index, 1, character);
+    }
     campaign.characters = updated;
 
     onUpdate({ ...campaign });
-  }
+  };
   const onCharacterDeleted = (character: CharacterSummary) => {
     if(!campaign) return;
 
@@ -54,19 +56,19 @@ export const CreateCampaign: React.FC<Props> = ({ campaign, saving, onUpdate, on
     campaign.characters = updated;
 
     onUpdate({...campaign});
-  }
+  };
 
   const onBackClicked = () => {
     setStep(step - 1);
-  }
+  };
   const onNextClicked = () => {
     setStep(step + 1);
-  }
+  };
   const onCreateClicked = () => {
     if(!campaign) return;
 
     onCreate(campaign);
-  }
+  };
   
   return (
     <div>
@@ -135,7 +137,7 @@ const WizardStep: React.FC<WizardStepProps> = ({ step, instructions, children, o
       {children}
     </Card>
   );
-}
+};
 
 interface NewCharacterEditorProps {
   campaign: Campaign,
@@ -164,7 +166,7 @@ const NewCharacterEditor: React.FC<NewCharacterEditorProps> = ({campaign, saving
   const addButtonProps = {
     disabled: hasReachedMaxCharacters || hasOtherOngoingTransaction,
     onClick: toggleAddingCharacter
-  }
+  };
   const addButtonText = !isAdding ? "Add Character" : "Cancel";
 
   return (
@@ -178,7 +180,7 @@ const NewCharacterEditor: React.FC<NewCharacterEditorProps> = ({campaign, saving
       )}
     </Card.Body>
   );
-}
+};
 
 interface CharactersEditorProps {
   campaign: Campaign,
@@ -235,7 +237,7 @@ const CharacterEditor: React.FC<CharacterEditorProps> = ({ character, saving, on
     if(onDelete) onDelete(character);
   };
 
-  const buttonDisabled = !isEditing && !isDeleting && saving.isPending
+  const buttonDisabled = !isEditing && !isDeleting && saving.isPending;
   const buttonText = !isEditing ? "Edit" : "Cancel";
   const avatarUrl =  character.avatarUrl || defaultAvatarUrl;
   const avatarStyle = {
@@ -296,7 +298,7 @@ interface CampaignReviewProps {
 const CampaignReview: React.FC<CampaignReviewProps> = ({ campaign, saving, onCreate }) => {
   const buttonProps = {
     disabled: saving.isPending || saving.isComplete
-  }
+  };
   const buttonText = !saving.isPending ? "Create Campaign" : "Saving...";
   return (
     <>
@@ -364,4 +366,4 @@ const CampaignReview: React.FC<CampaignReviewProps> = ({ campaign, saving, onCre
     </ListGroup>
     </>
   );
-}
+};

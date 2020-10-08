@@ -75,8 +75,8 @@ export const CharacterForm: React.FC<CharacterFormProps> = ({character = buildCh
   };
 
   const buttonProps = {
-    disabled: saving.isPending,
-  }
+    disabled: saving.isPending
+  };
   const _buttonText = saving.isPending ? "Saving..." : buttonText;
 
   return (

@@ -32,7 +32,7 @@ export const Container: React.FC<Props> = ({ children }) => {
       setService(svc);
       await svc.connect();
       setConnected(true);
-    }
+    };
     buildService();
 
     // Cleanup method
@@ -44,11 +44,11 @@ export const Container: React.FC<Props> = ({ children }) => {
 
   const onUpdate = (campaign: Campaign) => {
     setCampaign(campaign);
-  }
+  };
 
   const onCreate = (campaign: Campaign) => {
     createCampaign(campaign);
-  }
+  };
   const createCampaign = async (campaign: Campaign) => {
     if(!service || !listService || !connected) {
       setSaving(buildStatus(TransactionState.ERRORED, "unable to save."));
@@ -61,7 +61,7 @@ export const Container: React.FC<Props> = ({ children }) => {
     setSaving(buildStatus(TransactionState.SUCCESS));
     setCampaign(saved);
     listService.add(saved);
-  }
+  };
 
   return (
     <>

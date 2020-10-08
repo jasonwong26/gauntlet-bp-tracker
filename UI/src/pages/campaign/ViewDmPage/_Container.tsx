@@ -54,7 +54,7 @@ export const Container: React.FC<Props> = ({ campaignId, children }) => {
       } catch(error) {
         setLoading(buildStatus(TransactionState.ERRORED, error));
       }
-    }
+    };
 
     connect();
 

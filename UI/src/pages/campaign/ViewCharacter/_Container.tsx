@@ -57,7 +57,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       if(!isValid) {
         setLoading(buildStatus(TransactionState.SUCCESS));
       }  
-    }
+    };
     validateCampaign();
 
     // Cleanup method
@@ -90,7 +90,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       } catch(err){
         setLoading(buildStatus(TransactionState.ERRORED, err));
       }
-    }
+    };
     connect();
   }, [campaignId, characterId, service, listService, isValidCampaign]);
 
@@ -108,16 +108,16 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     const saveTransaction = async () => {
       try {
         const updated = {...character!, ...profile}; 
-        setCharacter(updated)
+        setCharacter(updated);
         setSaveState(buildStatus(TransactionState.PENDING));
         await service?.saveCharacter(profile);
         setSaveState(buildStatus(TransactionState.SUCCESS));  
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  
       }
-    }
+    };
     saveTransaction();
-  }
+  };
   const setEncounter = (encounter: Encounter) => {    
     appService!.setEncounter(encounter);
     const newState = appService!.getState();
@@ -136,7 +136,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  
       }
-    }
+    };
     saveTransaction();
   };
   const onRemove = (item: PurchasedItem) => {
@@ -152,7 +152,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  
       }
-    }
+    };
     saveTransaction();
   };
   

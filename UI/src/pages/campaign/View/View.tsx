@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Card, Col, Row } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 
@@ -10,7 +10,13 @@ interface Props {
 }
 
 export const ViewCampaign: React.FC<Props> = ({ campaign, onLeave }) => {
+  const [isLeaving, setIsLeaving] = useState(false);  
   const { characters } = campaign;
+
+  const toggleIsLeaving = () => {
+    setIsLeaving(is => !is);
+  };
+
   return (
   <>
     <Row>
@@ -20,7 +26,16 @@ export const ViewCampaign: React.FC<Props> = ({ campaign, onLeave }) => {
         <p>{campaign.description}</p>
       </Col>
       <Col sm="auto">
-        <Button variant="danger" onClick={onLeave}>Leave Campaign</Button>
+        {!isLeaving && (
+          <Button variant="danger" onClick={toggleIsLeaving}>Leave Campaign</Button>
+        )}
+        {!!isLeaving && (
+          <div className="text-right">
+            <p>Are you sure you want to leave this campaign?</p>
+            <Button size="sm" onClick={toggleIsLeaving}>No</Button>
+            <Button size="sm" className="ml-3" onClick={onLeave}>Yes</Button>
+          </div>
+        )}
       </Col>
     </Row>
     <hr/>

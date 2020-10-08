@@ -52,7 +52,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
       } catch(err){
         setLoading(buildStatus(TransactionState.ERRORED, err));
       }
-    }
+    };
     connect();
   }, [id, service]);
   useEffect(() => {

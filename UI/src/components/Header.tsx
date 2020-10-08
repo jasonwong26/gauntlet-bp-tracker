@@ -21,6 +21,16 @@ export const Header: React.FC<Props> = ({title}) => (
       <Navbar.Toggle />
       <Navbar.Collapse className="justify-content-end">
         <Nav>
+          <LinkContainer exact to="/">
+            <Nav.Link>Home</Nav.Link>
+          </LinkContainer>
+        </Nav>
+        <Nav>
+          <LinkContainer exact to="/about" activeClassName="active">
+            <Nav.Link>About</Nav.Link>
+          </LinkContainer>
+        </Nav>
+        <Nav>
           <LinkContainer to="/campaign/">
             <Nav.Link href="/campaign/">My Campaigns</Nav.Link>
           </LinkContainer>

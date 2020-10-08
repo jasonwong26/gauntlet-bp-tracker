@@ -58,7 +58,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
       } catch(err){
         setLoading(buildStatus(TransactionState.ERRORED, err));
       }
-    }
+    };
     connect();
   }, [id, service, listService]);
 
@@ -66,7 +66,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
     if(!listService || !campaign) return;
     listService.remove(campaign.id);
     setRedirect(true);
-  }
+  };
 
   return (
     <LoadingByState status={loading}>

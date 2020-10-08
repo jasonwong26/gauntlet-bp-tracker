@@ -36,7 +36,7 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
       const c = await service.getCampaign();
       setCampaign(c);
       setLoading(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     getCampaign();
   }, [service]);
@@ -48,7 +48,7 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
       const updated = await service.updateCampaign(campaign);
       setCampaign(updated);
       setSaving(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     updateCampaign(campaign);
   };
@@ -57,14 +57,14 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
     setSaving(buildStatus(TransactionState.PENDING));
 
     const deleteCampaign = async (campaign: Campaign) => {
-      await service.deleteCampaign(campaign)
+      await service.deleteCampaign(campaign);
       setSaving(buildStatus(TransactionState.SUCCESS));
       listService?.remove(campaign.id);
       setRedirect(true);
-    }
+    };
 
     deleteCampaign(campaign);
-  }
+  };
 
   const onCharacterSave = (character: CharacterSummary) => {
     setSaving(buildStatus(TransactionState.PENDING));
@@ -81,7 +81,7 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
     };
 
     saveCharacter(character);
-  }
+  };
   const onCharacterDelete = (character: CharacterSummary) => {
     setSaving(buildStatus(TransactionState.PENDING));
 
@@ -98,7 +98,7 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
     };
 
     deleteCharacter(character);
-  }
+  };
 
   return (
     <LoadingByState status={loading}>

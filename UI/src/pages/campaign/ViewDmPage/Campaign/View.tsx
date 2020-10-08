@@ -80,7 +80,7 @@ const CampaignEditor: React.FC<CampaignEditorProps> = ({ campaign, saving, onSav
     if(onDelete) onDelete(campaign);
   };
 
-  const buttonDisabled = !isEditing && !isDeleting && saving.isPending
+  const buttonDisabled = !isEditing && !isDeleting && saving.isPending;
   const editButtonText = !isEditing ? "Edit" : "Cancel";
   const deleteButtonText = !isDeleting ? "Delete" : "Cancel";
 
@@ -167,7 +167,7 @@ const CharactersEditor: React.FC<CharactersEditorProps> = ({ campaign, saving, o
   const addButtonProps = {
     disabled: hasReachedMaxCharacters || hasOtherOngoingTransaction,
     onClick: toggleAddingCharacter
-  }
+  };
   const addButtonText = !isAdding ? "Add Character" : "Cancel";
 
   return (
@@ -218,7 +218,7 @@ const CharacterEditor: React.FC<CharacterEditorProps> = ({ character, saving, on
     if(onDelete) onDelete(character);
   };
 
-  const buttonDisabled = !isEditing && !isDeleting && saving.isPending
+  const buttonDisabled = !isEditing && !isDeleting && saving.isPending;
   const buttonText = !isEditing ? "Edit" : "Cancel";
   const avatarUrl =  character.avatarUrl || defaultAvatarUrl;
   const avatarStyle = {

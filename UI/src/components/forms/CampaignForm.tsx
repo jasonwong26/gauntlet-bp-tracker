@@ -55,8 +55,8 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({ campaign = buildCamp
   };
 
   const buttonProps = {
-    disabled: saving.isPending,
-  }
+    disabled: saving.isPending
+  };
   const _buttonText = saving.isPending ? "Saving..." : buttonText;
 
   return (

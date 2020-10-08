@@ -11,7 +11,7 @@ const history = createBrowserHistory();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App title="BP Tracker" history={history} />
+    <App title="DnD Gauntlet" history={history} />
   </React.StrictMode>
   ,
   document.getElementById("root")

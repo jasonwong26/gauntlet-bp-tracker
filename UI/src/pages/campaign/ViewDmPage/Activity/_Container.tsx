@@ -40,7 +40,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       setNotifications(alerts);
       setLastPageSize(alerts.length);
       setLoading(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     loadNotifications(request);
   }, [service, setLoading, setNotifications, setLastPageSize]);
@@ -60,7 +60,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       setNotifications(alerts);
       setLastPageSize(alerts.length);
       setRefreshing(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     refreshNotifications(request);
   };
@@ -85,7 +85,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       });
       setLastPageSize(alerts.length);
       setFetching(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     fetchNotifications(request);
   };

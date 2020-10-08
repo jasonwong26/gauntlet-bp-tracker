@@ -45,10 +45,10 @@ const ListItem: React.FC<ItemProps> = ({ campaign, onDelete }) => {
 
   const toggleIsDeleting = () => {
     setIsDeleting(d => !d);
-  }
+  };
   const handleDelete = () => {
     if(!!onDelete) onDelete(campaign);
-  }
+  };
 
   const url = `/campaign/${campaign.id}`;
 

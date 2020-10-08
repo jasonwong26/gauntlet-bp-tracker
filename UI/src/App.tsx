@@ -4,7 +4,8 @@ import { Route, Switch } from "react-router-dom";
 import { History } from "history";
 
 import { Header } from "./components/Header";
-import { Home } from "./pages/Home";
+import { Home } from "./pages/home/Home";
+import { About } from "./pages/about/About";
 
 import { CreateCampaign, JoinCampaign, ViewCampaign, CampaignsList, ViewCharacter, ViewDmPage } from "./pages/campaign";
 import { NotFound } from "./pages/errors";
@@ -21,6 +22,9 @@ const App: React.FC<Props> = ({title, history}) => (
       <Switch>
         {/* Home */}
         <Route exact path="/" component={Home} />
+
+        {/* About */}
+        <Route exact path="/About" component={About} />
 
         {/* Campaign Pages */}
         <Route exact path="/campaign/create" component={CreateCampaign} />

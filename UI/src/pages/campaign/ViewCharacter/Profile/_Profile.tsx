@@ -19,11 +19,11 @@ export const CharacterProfile: React.FC<Props> = ({ character, saving, updatePro
 
   const toggleEditing = () => {
     setIsEditing(e => !e);
-  }
+  };
   const handleSave = (character: CharacterSummary) => {
     setIsEditing(false);
     if(updateProfile) updateProfile(character);
-  }
+  };
 
   const avatarUrl =  character.avatarUrl ?? defaultAvatarUrl;
   const avatarStyle = {

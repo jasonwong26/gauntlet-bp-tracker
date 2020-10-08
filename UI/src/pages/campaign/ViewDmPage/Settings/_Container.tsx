@@ -26,7 +26,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       const s = await service.getSettings();
       setSettings(s);
       setLoading(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     getSettings();
   }, [service]);
@@ -36,7 +36,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       const updated = await service.saveSettings(settings);
       setSettings(updated);
       setSaving(buildStatus(TransactionState.SUCCESS));
-    }
+    };
 
     saveSettings(settings);
   };

@@ -17,6 +17,7 @@ export const About: React.FC = () => (
     </ul>
     <p>
       If you have feedback or suggestions for other improvements for the site please let me know!
+      You can reach me via email <a href="mailto:jasonwong.26@gmail.com?subject=DnD Gauntlet">here</a>.
     </p>
 
     <h2>Why I built this</h2>

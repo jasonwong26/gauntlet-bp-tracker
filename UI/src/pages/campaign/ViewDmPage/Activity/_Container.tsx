@@ -36,10 +36,14 @@ export const Container: React.FC<Props> = ({ service, children }) => {
 
     const loadNotifications = async (request: AlertRequest) => {
       setLoading(buildStatus(TransactionState.PENDING));
-      const alerts = await service.getNotifications(request);
-      setNotifications(alerts);
-      setLastPageSize(alerts.length);
-      setLoading(buildStatus(TransactionState.SUCCESS));
+      try {
+        const alerts = await service.getNotifications(request);
+        setNotifications(alerts);
+        setLastPageSize(alerts.length);
+        setLoading(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setLoading(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     loadNotifications(request);
@@ -56,10 +60,14 @@ export const Container: React.FC<Props> = ({ service, children }) => {
     };
     const refreshNotifications = async (request: AlertRequest) => {
       setRefreshing(buildStatus(TransactionState.PENDING));
-      const alerts = await service.getNotifications(request);
-      setNotifications(alerts);
-      setLastPageSize(alerts.length);
-      setRefreshing(buildStatus(TransactionState.SUCCESS));
+      try {
+        const alerts = await service.getNotifications(request);
+        setNotifications(alerts);
+        setLastPageSize(alerts.length);
+        setRefreshing(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setRefreshing(buildStatus(TransactionState.ERRORED, err));
+      }
     };
 
     refreshNotifications(request);
@@ -79,12 +87,16 @@ export const Container: React.FC<Props> = ({ service, children }) => {
     }
     const fetchNotifications = async (request: AlertRequest) => {
       setFetching(buildStatus(TransactionState.PENDING));
-      const alerts = await service.getNotifications(request);
-      setNotifications(ns => {
-        return [...ns, ...alerts];
-      });
-      setLastPageSize(alerts.length);
-      setFetching(buildStatus(TransactionState.SUCCESS));
+      try {
+        const alerts = await service.getNotifications(request);
+        setNotifications(ns => {
+          return [...ns, ...alerts];
+        });
+        setLastPageSize(alerts.length);
+        setFetching(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setFetching(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     fetchNotifications(request);

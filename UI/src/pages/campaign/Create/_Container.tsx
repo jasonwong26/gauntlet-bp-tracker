@@ -56,11 +56,14 @@ export const Container: React.FC<Props> = ({ children }) => {
     }
 
     setSaving(buildStatus(TransactionState.PENDING));
-    const saved = await service.createCampaign(campaign);
-
-    setSaving(buildStatus(TransactionState.SUCCESS));
-    setCampaign(saved);
-    listService.add(saved);
+    try {
+      const saved = await service.createCampaign(campaign);
+      setSaving(buildStatus(TransactionState.SUCCESS));
+      setCampaign(saved);
+      listService.add(saved);
+    } catch(err) {
+      setSaving(buildStatus(TransactionState.ERRORED, err));
+    }
   };
 
   return (

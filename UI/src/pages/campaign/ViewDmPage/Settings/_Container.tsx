@@ -23,9 +23,13 @@ export const Container: React.FC<Props> = ({ service, children }) => {
 
     const getSettings = async () => {
       setLoading(buildStatus(TransactionState.PENDING));
-      const s = await service.getSettings();
-      setSettings(s);
-      setLoading(buildStatus(TransactionState.SUCCESS));
+      try {
+        const s = await service.getSettings();
+        setSettings(s);
+        setLoading(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setLoading(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     getSettings();
@@ -33,9 +37,15 @@ export const Container: React.FC<Props> = ({ service, children }) => {
 
   const onSave: onSave = settings => {
     const saveSettings = async (settings: CampaignSettings) => {
-      const updated = await service.saveSettings(settings);
-      setSettings(updated);
-      setSaving(buildStatus(TransactionState.SUCCESS));
+      setSaving(buildStatus(TransactionState.PENDING));
+      try {
+        const updated = await service.saveSettings(settings);
+        setSettings(updated);
+        setSaving(buildStatus(TransactionState.SUCCESS));  
+      }
+      catch (err) {
+        setSaving(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     saveSettings(settings);

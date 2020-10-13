@@ -33,9 +33,13 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
 
     setLoading(buildStatus(TransactionState.PENDING));
     const getCampaign = async () => {
-      const c = await service.getCampaign();
-      setCampaign(c);
-      setLoading(buildStatus(TransactionState.SUCCESS));
+      try {
+        const c = await service.getCampaign();
+        setCampaign(c);
+        setLoading(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setLoading(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     getCampaign();
@@ -45,9 +49,13 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
     setSaving(buildStatus(TransactionState.PENDING));
 
     const updateCampaign = async (campaign: Campaign) => {
-      const updated = await service.updateCampaign(campaign);
-      setCampaign(updated);
-      setSaving(buildStatus(TransactionState.SUCCESS));
+      try {
+        const updated = await service.updateCampaign(campaign);
+        setCampaign(updated);
+        setSaving(buildStatus(TransactionState.SUCCESS));  
+      } catch (err) {
+        setSaving(buildStatus(TransactionState.ERRORED, err));  
+      }
     };
 
     updateCampaign(campaign);
@@ -57,10 +65,14 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
     setSaving(buildStatus(TransactionState.PENDING));
 
     const deleteCampaign = async (campaign: Campaign) => {
-      await service.deleteCampaign(campaign);
-      setSaving(buildStatus(TransactionState.SUCCESS));
-      listService?.remove(campaign.id);
-      setRedirect(true);
+      try {
+        await service.deleteCampaign(campaign);
+        setSaving(buildStatus(TransactionState.SUCCESS));
+        listService?.remove(campaign.id);
+        setRedirect(true);  
+      } catch (err) {
+        setSaving(buildStatus(TransactionState.ERRORED, err));
+      }
     };
 
     deleteCampaign(campaign);

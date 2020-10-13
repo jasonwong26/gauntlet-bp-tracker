@@ -55,6 +55,7 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
       setIsValidCampaign(isValid);
 
       if(!isValid) {
+        // loading complete (page will display relevant message)
         setLoading(buildStatus(TransactionState.SUCCESS));
       }  
     };
@@ -80,10 +81,13 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
           });
         });
 
-        const settings = await service.getSettings(campaignId);
+        const [settings, char] = await Promise.all([
+          service.getSettings(campaignId), 
+          service.getCharacter(characterId)]);
+
         setCampaign(settings);  
-        const char = await service.getCharacter(characterId);
         if(!char) {
+          // loading complete (page will display relevant message)
           setLoading(buildStatus(TransactionState.SUCCESS));
         }
         setCharacter(char);

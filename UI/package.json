@@ -10,6 +10,7 @@
     "build:prod": "npm run build",
     "build:staging": "env-cmd -f .env.staging npm run build",
     "test": "react-scripts test",
+    "test:coverage": "react-scripts test --coverage",
     "eject": "react-scripts eject"
   },
   "dependencies": {

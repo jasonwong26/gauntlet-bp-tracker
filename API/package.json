@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --config jestconfig.json || exit 0",
-    "test:watch": "jest --config jestconfig.json --watch",
+    "test": "jest --config jestconfig.json --watch || exit 0",
+    "test:coverage": "jest --config jestconfig.json --coverage || exit 0",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx || exit 0",
     "lint:fix": "eslint . --fix --ext .js,.jsx,.ts,.tsx || exit 0",
     "prebuild": "rm -rf lib/",

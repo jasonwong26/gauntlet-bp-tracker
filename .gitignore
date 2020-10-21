@@ -1,18 +1,8 @@
 # environment
  .DS_Store
-/.vscode
-/ui/.env.local
-/api/.env.local
 
 # dependencies
 /node_modules
-/ui/node_modules
-/api/node_modules
-
-# builds
-/api/.env
-/api/lib
-/api/tools/deploy.sh
 
 # Dev Resources
 BP_Menu.md

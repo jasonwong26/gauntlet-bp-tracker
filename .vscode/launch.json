@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug API Tests",
+      "type": "node",
+      "request": "launch",
+      "envFile": "${workspaceFolder}/api/.env",
+      "runtimeArgs": [
+        "--inspect-brk", 
+        "${workspaceRoot}/api/node_modules/.bin/jest", 
+        "--runInBand",
+        "--config",
+        "${workspaceRoot}/api/jestconfig.json"
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug UI Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/ui/node_modules/.bin/react-scripts",
+      "args": ["test", "--runInBand", "--no-cache", "--watchAll=false"],
+      "cwd": "${workspaceRoot}/ui",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": { "CI": "true" },
+      "disableOptimisticBPs": true
+    }
+  ]
+}

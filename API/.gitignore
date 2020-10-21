@@ -1,14 +1,13 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
 
 # testing
 /coverage
 
-# production
-/build
+# builds
+/.env
+/lib
 
 # misc
 .DS_Store

@@ -1,4 +1,4 @@
-import { DynamoDB, AWSError } from "aws-sdk";
+import { DynamoDB } from "aws-sdk";
 import { GetItemInput, GetItemOutput, BatchGetItemInput, BatchGetItemOutput, QueryInput, QueryOutput, ScanInput, ScanOutput, DbOptions, DbError } from "./_types";
 
 export interface ReadOnly {
@@ -28,11 +28,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.get(params).promise();
     } catch (e) {
-      if(e instanceof AWSError) {
-        throw new DbError(e);
-      }
-
-      throw e;
+      throw new DbError(e);
     }
   }
 
@@ -40,11 +36,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.batchGet(params).promise();
     } catch (e) {
-      if(e instanceof AWSError) {
-        throw new DbError(e);
-      }
-
-      throw e;
+      throw new DbError(e);
     }
   }
 
@@ -52,11 +44,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.query(params).promise();
     } catch (e) {
-      if(e instanceof AWSError) {
         throw new DbError(e);
-      }
-
-      throw e;
     }    
   }
 
@@ -64,11 +52,7 @@ export class ReadOnlyDbClient implements ReadOnly {
     try {
       return await this.DynamoDb.scan(params).promise();
     } catch (e) {
-      if(e instanceof AWSError) {
-        throw new DbError(e);
-      }
-
-      throw e;
+      throw new DbError(e);
     }    
   }
 }

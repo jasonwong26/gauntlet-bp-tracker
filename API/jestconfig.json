@@ -11,5 +11,8 @@
   ],
   "transform": {
     "^.+\\.(ts|tsx)?$": "ts-jest"
-  }
+  },
+  "coveragePathIgnorePatterns": [
+    "_types.ts"
+  ]
 }

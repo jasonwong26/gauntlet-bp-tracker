@@ -9,7 +9,7 @@ export interface Input {
   action: string
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 
 export const handler: AsyncEventHandler<ConnectEvent> = async event => {
@@ -29,7 +29,7 @@ export const handler: AsyncEventHandler<ConnectEvent> = async event => {
   console.log("...connected");
   return { statusCode: 200, body: "Connected." };
 };
-export const mapToInput = (event: ConnectEvent) => {
+const mapToInput = (event: ConnectEvent) => {
   const { connectionId, domainName, stage } = event.requestContext;
   const endPoint = `${domainName}/${stage}`;
 
@@ -45,7 +45,7 @@ const writeToDatabase: (input: Input) => Promise<void> = async input => {
   console.log("writing to db...", { putParams });
   await db.put(putParams);
 };
-export const mapToConnection = (input: Input) => {
+const mapToConnection = (input: Input) => {
   const { connectionId } = input;
   const connection: DbConnection = {
     pk: "Connections",

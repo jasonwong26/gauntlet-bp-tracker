@@ -17,7 +17,7 @@ interface Input {
   metadata: Campaign
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
@@ -66,7 +66,7 @@ const saveToDb = async (input: Input) => {
     TableName: TABLE_NAME, 
     Key: {
       pk: `Campaign#${input.campaign}`,
-      sk: `Metadata`  
+      sk: "Metadata"  
     },
     UpdateExpression: "set campaign.title = :title, campaign.description = :description, campaign.author = :author, campaign.authorEmail = :authorEmail",
     ExpressionAttributeValues: {

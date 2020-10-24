@@ -8,8 +8,7 @@ interface SendService {
 interface Input { 
   endPoint: string,
   action: string,
-  connectionId: string, 
-  [key:string]: any 
+  connectionId: string
 }
 type SendServiceFactory = (dbClient: Crud, tableName: string) => SendService;
 

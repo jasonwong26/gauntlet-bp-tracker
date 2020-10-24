@@ -20,7 +20,7 @@ interface Output extends Input {
   campaign: Campaign
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
@@ -100,7 +100,7 @@ const createEntry: (campaignId: string, input: Input) => DbCampaign = (campaignI
 
   const output: DbCampaign = {
     pk: `Campaign#${campaignId}`,
-    sk: `Metadata`,
+    sk: "Metadata",
     type: "Campaign#Metadata",
     typeSk: `${campaignId}`,
     campaign

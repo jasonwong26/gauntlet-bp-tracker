@@ -19,14 +19,14 @@ interface Input {
   item: PurchasedItem
 }
 interface Output extends Input {
-  character?: Character
+  character: Character
 }
 interface AlertMessage extends PurchaseAlert {
   endPoint: string,
   connectionId: string
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
@@ -121,7 +121,7 @@ const saveToDatabase = async (item: DbCharacter) => {
 };
 
 const mapToAlert: (output: Output) => PurchaseAlert = output => {
-  const character = output.character!;
+  const character = output.character;
   const summary: CharacterSummary = {
     id: character.id,
     name: character.name,

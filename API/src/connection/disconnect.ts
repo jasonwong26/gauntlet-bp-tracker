@@ -9,7 +9,7 @@ interface Input {
   action: string
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 
 // The $disconnect route is executed after the connection is closed.

@@ -6,8 +6,7 @@ export interface ApiClient {
 }
 interface Input { 
   action: string,
-  connectionId: string, 
-  [key:string]: any 
+  connectionId: string
 }
 type onStaleConnectionCallback = (connectionId: string) => Promise<void>;
 type PostToConnectionRequest = ApiGatewayManagementApi.Types.PostToConnectionRequest;
@@ -32,8 +31,9 @@ export class WebSocketApiClient implements ApiClient {
     } catch (e) {
       if (e.statusCode === 410) {
         console.log(`Found stale connection, deleting connection: ${input.connectionId}`);
-        // tslint:disable-next-line:no-unused-expression
-        await !!this.onStaleConnection && this.onStaleConnection!(input.connectionId);
+        if(this.onStaleConnection) {
+          await this.onStaleConnection(input.connectionId)
+        }
       } else {
         throw e;
       }

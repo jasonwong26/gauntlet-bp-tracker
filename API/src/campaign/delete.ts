@@ -19,7 +19,7 @@ interface Output extends Input {
   status: string
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
@@ -68,11 +68,11 @@ const deleteFromDatabase: (input: Input) => Promise<void> = async input => {
 const fetchAllDocuments: (input: Input) => Promise<AttributeMap[]> = async input => {
   const documents = [];
   let results = await fetchDocumentKeys(input);
-  if(!!results.Items) {
+  if(results.Items) {
     documents.push(...results.Items);
   }
 
-  while(!!results.LastEvaluatedKey) {
+  while(results.LastEvaluatedKey) {
     results = await fetchDocumentKeys(input, results.LastEvaluatedKey);
     documents.push(results.Items ?? []);
   }

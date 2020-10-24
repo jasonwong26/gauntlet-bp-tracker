@@ -4,8 +4,7 @@ import { MessageEvent, AsyncEventHandler } from "../_types";
 import { ValidationError } from "../shared/Errors";
 
 interface Request {
-  action: string,
-  [key: string]: any
+  action: string
 }
 interface Output {
   endPoint: string,
@@ -14,7 +13,7 @@ interface Output {
   message?: string
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 

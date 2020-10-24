@@ -17,7 +17,7 @@ interface Input {
   settings: CampaignSettings
 }
 
-const TABLE_NAME = process.env.TABLE_NAME!;
+const TABLE_NAME = process.env.TABLE_NAME || "";
 const db = new CrudDbClient();
 const service = buildSendService(db, TABLE_NAME);
 
@@ -63,7 +63,7 @@ const mapToInput = (event: MessageEvent) => {
 const existsInDatabase = async (input: Input) => {
   const keys = {
     pk: `Campaign#${input.campaign}`,
-    sk: `Settings`
+    sk: "Settings"
   };
   return await existsInDb(keys);
 };
@@ -84,7 +84,7 @@ const saveToDb = async (input: Input) => {
 
   const item: DbCampaignSettings = {
     pk: `Campaign#${input.campaign}`,
-    sk: `Settings`,
+    sk: "Settings",
     type: "Campaign#Settings",
     typeSk: input.campaign,
     settings

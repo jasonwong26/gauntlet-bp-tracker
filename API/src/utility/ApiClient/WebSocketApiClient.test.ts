@@ -3,7 +3,7 @@ import {WebSocketApiClient} from "./WebSocketApiClient";
 describe.skip("Utility - WebSocketApiClient", () => {
   expect(process.env.AWS_REGION).toBeTruthy();
   expect(process.env.AWS_ENDPOINT).toBeTruthy();
-  const endPoint = process.env.AWS_ENDPOINT!;
+  const endPoint = process.env.AWS_ENDPOINT || "";
 
   describe("construction tests", () => {
     it("builds successfully", async () => {

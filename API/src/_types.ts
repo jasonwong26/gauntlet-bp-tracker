@@ -47,12 +47,28 @@ export interface CharacterSummary {
   class: string
 }
 export interface Character extends CharacterSummary {
-  history: PurchasedItem[],
-  [key: string]: any
+  history: PurchasedItem[]
 }
 
 export interface CampaignSettings {
-  [key: string]: any
+  encounters: Encounter[],
+  achievements: PurchaseItem[],
+  restsAndImprovements: PurchaseItem[],
+  potions: PurchaseItem[],
+  weapons: PurchaseItem[],
+  armor: PurchaseItem[],
+  magic: PurchaseItem[]
+}
+export interface Encounter {
+  tier: number,
+  level: number,
+  points: number
+}
+export interface PurchaseItem {
+  key: string,
+  description: string
+  points: number
+  tier?: number
 }
 
 interface DbRecord {

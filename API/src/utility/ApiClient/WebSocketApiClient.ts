@@ -10,18 +10,16 @@ interface Input {
 }
 type onStaleConnectionCallback = (connectionId: string) => Promise<void>;
 type PostToConnectionRequest = ApiGatewayManagementApi.Types.PostToConnectionRequest;
+type ApiClientFactory = (endPoint: string, onStaleConnection?: onStaleConnectionCallback) => ApiClient;
 
 export class WebSocketApiClient implements ApiClient {
   private api: ApiGatewayManagementApi;
   private onStaleConnection: onStaleConnectionCallback | null;
 
-  constructor(endPoint: string, onStaleConnection: onStaleConnectionCallback | null = null) {
-    if(!endPoint) throw new Error("endPoint must be specified");
+  constructor(api: ApiGatewayManagementApi, onStaleConnection: onStaleConnectionCallback | null = null) {
+    if(!api) throw new Error("api must be provided");
 
-    this.api = new ApiGatewayManagementApi({
-      apiVersion: "2018-11-29",
-      endpoint: endPoint
-    });
+    this.api = api
     this.onStaleConnection = onStaleConnection;
   }
 
@@ -29,11 +27,9 @@ export class WebSocketApiClient implements ApiClient {
     try {
       await this.sendToConnection(input);
     } catch (e) {
-      if (e.statusCode === 410) {
+      if (e.statusCode === 410 && this.onStaleConnection) {
         console.log(`Found stale connection, deleting connection: ${input.connectionId}`);
-        if(this.onStaleConnection) {
-          await this.onStaleConnection(input.connectionId)
-        }
+        await this.onStaleConnection(input.connectionId)
       } else {
         throw e;
       }
@@ -53,3 +49,15 @@ export class WebSocketApiClient implements ApiClient {
     this.onStaleConnection = input;
   }
 }
+
+export const buildApiClient: ApiClientFactory = (endPoint, onStaleConnection = undefined) => {
+  if(!endPoint) throw new Error("endPoint must be specified");
+
+  const api = new ApiGatewayManagementApi({
+    apiVersion: "2018-11-29",
+    endpoint: endPoint
+  });
+  const client = new WebSocketApiClient(api, onStaleConnection);
+
+  return client;
+};

@@ -1,4 +1,4 @@
-import { WebSocketApiClient} from "./ApiClient/WebSocketApiClient";
+import { buildApiClient } from "./ApiClient/WebSocketApiClient";
 import { Crud } from "./DbClient/CrudDbClient";
 import { QueryInput, QueryOutput, DeleteItemInput, AttributeMap } from "./DbClient/_types";
 
@@ -12,7 +12,7 @@ interface Input {
 }
 type SendServiceFactory = (dbClient: Crud, tableName: string) => SendService;
 
-export class BasicSendService implements SendService {
+class BasicSendService implements SendService {
   db: Crud;
   tableName: string;
 
@@ -25,7 +25,7 @@ export class BasicSendService implements SendService {
   }
 
   public send:SendService["send"] = async input => {
-    const api = new WebSocketApiClient(input.endPoint, this.deleteConnectionFromDatabase);
+    const api = buildApiClient(input.endPoint, this.deleteConnectionFromDatabase);
     await api.send(input);
   }
 

@@ -6,8 +6,10 @@ import "./styles/bootstrap/css/bootstrap-theme-slate-v4.min.css";
 import "./styles/styles.css";
 import App from "./App";
 import * as serviceWorker from "./serviceWorker";
+import { initializeAnalytics } from "./utility/Analytics";
 
 const history = createBrowserHistory();
+initializeAnalytics(history);
 
 ReactDOM.render(
   <React.StrictMode>

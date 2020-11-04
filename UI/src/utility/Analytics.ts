@@ -7,8 +7,8 @@ export const initializeAnalytics: (history: History) => void = history => {
   ReactGA.initialize(trackingId);
   
   history.listen(location => {
-    ReactGA.set({ page: location.pathname }); // Update the user's current page
-    ReactGA.pageview(location.pathname); // Record a pageview for the given page
+    ReactGA.set({ page: location.pathname });                   // Update the user's current page
+    ReactGA.pageview(`${location.pathname}${location.search}`); // Record a pageview for the given page
   });
 }
 

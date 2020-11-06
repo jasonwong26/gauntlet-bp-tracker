@@ -35,8 +35,10 @@ export const Container: React.FC<Props> = ({ children }) => {
   }, [service]);
 
   const onDelete = async (campaign: CampaignSummary) => {
-    await service!.remove(campaign.id);
-    const list = await service!.list();
+    if(!service) return;
+    
+    await service.remove(campaign.id);
+    const list = await service.list();
     setCampaigns(list);
   };
 

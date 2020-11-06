@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 
-type Handler = (...args: any[]) => void;
+type Handler = (...args: unknown[]) => void;
 
 /**
  * React Hook wrapper for setInterval function.
@@ -22,7 +22,7 @@ export function useInterval(callback: Handler, delay: number) {
   // Set up the interval.
   useEffect(() => {
     function tick() {
-      savedCallback.current!();
+      !!savedCallback.current && savedCallback.current();
     }
     if (delay !== null) {
       const id = setInterval(tick, delay);

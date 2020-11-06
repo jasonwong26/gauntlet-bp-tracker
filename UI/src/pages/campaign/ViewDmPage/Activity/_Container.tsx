@@ -81,7 +81,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
       maxDate: new Date().getTime(),
       pageSize
     };
-    if(!!notifications.length) {
+    if(notifications.length) {
       const lastAlert = notifications[notifications.length - 1];
       request.maxDate = lastAlert.item.purchaseDate - 1;
     }

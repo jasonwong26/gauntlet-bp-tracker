@@ -106,19 +106,30 @@ export class CharacterAppService implements AppService {
     let balance = 0;
     this.campaign.encounters.forEach(e => {
       const startingBalance = balance;
-      const items = transactions.has(e.level) ? transactions.get(e.level)! : [];
-      if(!!items.length) {
+      const items = transactions.get(e.level) || [];
+      if(items.length) {
         const lastItem = items[items.length - 1];
         balance = lastItem.balance + lastItem.points;
       }
-      const level: HistoryLevel = { level: e.level, encounter: e, startingBalance, endingBalance: balance, items };
+      const level: HistoryLevel = { 
+        level: e.level, 
+        encounter: e, 
+        startingBalance, 
+        endingBalance: balance, 
+        items 
+      };
 
-      if(!tiers.has(e.tier)) {
-        const tier: HistoryTier = { tier: e.tier, startingBalance: level.startingBalance, endingBalance: level.endingBalance, levels: [ level ] };
-        history.push(tier);
-        tiers.set(e.tier, tier);
+      const tier = tiers.get(e.tier);
+      if(!tier) {
+        const newTier: HistoryTier = { 
+          tier: e.tier, 
+          startingBalance: level.startingBalance, 
+          endingBalance: level.endingBalance, 
+          levels: [ level ] 
+        };
+        history.push(newTier);
+        tiers.set(e.tier, newTier);
       } else {
-        const tier = tiers.get(e.tier)!;
         tier.levels.push(level);
         tier.endingBalance = level.endingBalance;
       }
@@ -135,9 +146,11 @@ export class CharacterAppService implements AppService {
         balance
       };
 
-      if(!map.has(t.level)) map.set(t.level, []);
-
-      const arr = map.get(t.level)!;
+      let arr = map.get(t.level);
+      if(!arr) {
+        arr = [];
+        map.set(t.level, arr);
+      }
       arr.push(item);
   
       // update balance for next iteration

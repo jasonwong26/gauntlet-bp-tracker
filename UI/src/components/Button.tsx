@@ -8,10 +8,10 @@ interface ButtonByStateProps {
   status: TransactionStatus,
   icon?: string,
   onClick?: () => void,
-  [key: string]: any
+  [key: string]: unknown
 }
 
-interface VariableProps { [key: string]: any }
+interface VariableProps { [key: string]: unknown }
 
 export const ButtonByState: React.FC<ButtonByStateProps> = ({ status, icon, onClick, children, ...rest }) => {
   const [displayState, setDisplayState] = useState<TransactionState>(status.state);

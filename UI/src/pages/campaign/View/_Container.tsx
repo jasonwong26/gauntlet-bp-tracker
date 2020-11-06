@@ -70,7 +70,7 @@ export const Container: React.FC<Props> = ({ id, children }) => {
 
   return (
     <LoadingByState status={loading}>
-      { !redirect && children(campaign!, onLeave) }
+      { !redirect && !!campaign && children(campaign, onLeave) }
       { !!redirect && (
         <Redirect to="/campaign" />
       ) }

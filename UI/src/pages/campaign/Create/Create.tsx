@@ -17,7 +17,7 @@ interface Props {
   onCreate: (campaign: Campaign) => void
 }
 
-const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL!;
+const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL || "";
 const maxCampaignCharacters = 6;
 
 export const CreateCampaign: React.FC<Props> = ({ campaign, saving, onUpdate, onCreate }) => {
@@ -80,18 +80,18 @@ export const CreateCampaign: React.FC<Props> = ({ campaign, saving, onUpdate, on
           </Card.Body>
         </WizardStep>
       )}
-      {step === 2 && (
+      {step === 2 && !!campaign && (
         <WizardStep step={step} instructions="Create the party (you can always change this later):" onBackClicked={onBackClicked}>
-          <NewCharacterEditor campaign={campaign!} saving={saving} onSave={onCharacterSaved} />
-          <CharactersEditor campaign={campaign!} saving={saving} onSave={onCharacterSaved} onDelete={onCharacterDeleted} />
+          <NewCharacterEditor campaign={campaign} saving={saving} onSave={onCharacterSaved} />
+          <CharactersEditor campaign={campaign} saving={saving} onSave={onCharacterSaved} onDelete={onCharacterDeleted} />
           <Card.Body className="text-right">
-            <Button onClick={onNextClicked}>{!!campaign?.characters.length ? "Next" : "Skip"}</Button>
+            <Button onClick={onNextClicked}>{campaign.characters.length ? "Next" : "Skip"}</Button>
           </Card.Body>
         </WizardStep>
       )}
-      {step === 3 && (
+      {step === 3 && !!campaign && (
         <WizardStep step={step} instructions="Review and create:" onBackClicked={onBackClicked}>          
-          <CampaignReview campaign={campaign!} saving={saving} onCreate={onCreateClicked} />
+          <CampaignReview campaign={campaign} saving={saving} onCreate={onCreateClicked} />
         </WizardStep>
       )}
     </div>

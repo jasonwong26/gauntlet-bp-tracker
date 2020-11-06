@@ -30,7 +30,6 @@ describe("WebSocketService", () => {
 
   afterEach(() => {
     if(service.isConnected()) {
-      console.log("disconnecting...");
       service.disconnect();
     }
   });
@@ -38,8 +37,8 @@ describe("WebSocketService", () => {
   it.skip("can connect & disconnect", async () => {
     service = new WebSocketService(endpoint);
 
-    const messages: any[] = [];
-    const captureMessages = (message: any) => {
+    const messages: unknown[] = [];
+    const captureMessages = (message: unknown) => {
       messages.push(message);
     };
     service.onConnect(event => {
@@ -52,7 +51,6 @@ describe("WebSocketService", () => {
 
     service.onDisconnect(event => {
       captureMessages({message: "onDisconnect", event});
-      console.log("disconnected!");
     });
     await service.disconnect();
 
@@ -64,31 +62,21 @@ describe("WebSocketService", () => {
   it.skip("can send and receive messages", async () => {
     service = new WebSocketService(endpoint);
 
-    const messages: any[] = [];
-    const captureMessages = (message: any) => {
+    const messages: unknown[] = [];
+    const captureMessages = (message: unknown) => {
       messages.push(message);
     };
 
-
-    service.onConnect(event => {
-      console.log("connected!", { event });
-    });
     await service.connect();
 
     service.subscribe("getsettings", event => {
       captureMessages({message: "getsettings", event});
-      console.log("received!", { event });
     });
     const input = { action:"getsettings", campaign:"test" };    
     service.send(input);
-    console.log("sent!");
 
-    service.onDisconnect(event => {
-      console.log("disconnected!", { event });
-    });
     await service.disconnect();
 
     expect(messages.length).toBe(1);
-    console.log("message logged", { message: messages[0] });
   });
 });

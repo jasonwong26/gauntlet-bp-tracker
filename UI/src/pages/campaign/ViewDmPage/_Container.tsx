@@ -39,7 +39,7 @@ export const Container: React.FC<Props> = ({ campaignId, children }) => {
         setListService(lsvc);
 
         const campaignSummary = await lsvc.get(campaignId);
-        if(!!campaignSummary) {
+        if(campaignSummary) {
           setCampaign(campaignSummary);
 
           await svc.connect(campaignId);  
@@ -81,7 +81,7 @@ export const Container: React.FC<Props> = ({ campaignId, children }) => {
         {!campaign && (
           <Alert variant="warning">Campaign not found...</Alert>
         )}
-        {!!campaign && !!service && children(service, listService!, toasts, onToastClose)}
+        {!!campaign && !!service && !!listService && children(service, listService, toasts, onToastClose)}
       </LoadingByState>
   );
 };

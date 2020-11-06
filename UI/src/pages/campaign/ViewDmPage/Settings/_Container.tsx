@@ -53,7 +53,7 @@ export const Container: React.FC<Props> = ({ service, children }) => {
 
   return (
     <LoadingByState status={loading}>
-      {children(settings!, saving, onSave)}
+      {!!settings && children(settings, saving, onSave)}
     </LoadingByState>
   );
 };

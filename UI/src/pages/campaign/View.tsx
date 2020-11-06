@@ -4,9 +4,7 @@ import { RouteComponentProps } from "react-router";
 interface RouteParams {
   id: string
 }
-
-interface Params extends RouteComponentProps<RouteParams> {
-}
+type Params = RouteComponentProps<RouteParams>
 
 export const ViewCampaign: React.FC<Params> = ({ match }) => (
   <div className="container">

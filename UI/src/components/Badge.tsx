@@ -7,10 +7,10 @@ import { TransactionStatus, TransactionState } from "../shared/TransactionStatus
 interface BadgeByStateProps {
   status: TransactionStatus,
   icon?: string,
-  [key: string]: any
+  [key: string]: unknown
 }
 
-interface VariableProps { [key: string]: any }
+interface VariableProps { [key: string]: unknown }
 
 export const BadgeByState: React.FC<BadgeByStateProps> = ({ status, icon, children, ...rest }) => {
   const [displayState, setDisplayState] = useState<TransactionState>(status.state);

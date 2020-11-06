@@ -11,11 +11,11 @@ export interface SocketService {
 }
 interface MessageData {
   action: string,
-  [key: string]: any
+  [key: string]: unknown
 }
-type ConnectHandler = (event?: Event) => any;
-export type EventHandler = (input: { [key: string]: any }) => any;
-type DisconnectHandler = (event?: CloseEvent) => any;
+type ConnectHandler = (event?: Event) => unknown;
+export type EventHandler = (input: { [key: string]: unknown }) => unknown;
+type DisconnectHandler = (event?: CloseEvent) => unknown;
 
 enum SocketState {
   CONNECTING = 0, // Socket has been created. The connection is not yet open.
@@ -54,7 +54,7 @@ export class WebSocketService implements SocketService {
   public connect: SocketService["connect"] = async () => {
     this.socket = new WebSocket(this.uri);
     this.socket.onopen = event => {
-      if(!!this.connectHandler) {
+      if(this.connectHandler) {
         this.connectHandler(event);
       }
     };
@@ -69,7 +69,7 @@ export class WebSocketService implements SocketService {
     console.log("event received...", {event, eventListeners});
     eventListeners?.map(el => el(data));
   }
-  private awaitCriteria = async (predicate: () => boolean, delay: number = 500) => {
+  private awaitCriteria = async (predicate: () => boolean, delay = 500) => {
     const sleep = (ms: number) => {
       return new Promise(resolve => setTimeout(resolve, ms));
     };
@@ -109,8 +109,11 @@ export class WebSocketService implements SocketService {
     if(!this.isConnected()) {
       await this.reconnect();
     }
+
+    if(!this.socket) throw new Error("socket unavailable.");
+    
     const body = JSON.stringify(input);
-    this.socket!.send(body); 
+    this.socket.send(body);
   }
   private reconnect = async () => {
     const maxTries = this.options.maxRetries;
@@ -132,7 +135,7 @@ export class WebSocketService implements SocketService {
     if(!this.socket) return;
 
     this.socket.onclose =event => {
-      if(!!this.disconnectHandler) {
+      if(this.disconnectHandler) {
         this.disconnectHandler(event);
       }
     };

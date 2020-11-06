@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 
 interface EditButtonProps {
   onClick?: () => void,
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export const EditButton: React.FC<EditButtonProps> = ({ onClick, ...rest }) => {

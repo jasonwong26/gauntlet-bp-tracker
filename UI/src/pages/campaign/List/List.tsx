@@ -47,7 +47,7 @@ const ListItem: React.FC<ItemProps> = ({ campaign, onDelete }) => {
     setIsDeleting(d => !d);
   };
   const handleDelete = () => {
-    if(!!onDelete) onDelete(campaign);
+    if(onDelete) onDelete(campaign);
   };
 
   const url = `/campaign/${campaign.id}`;

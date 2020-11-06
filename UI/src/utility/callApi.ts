@@ -1,7 +1,7 @@
 
-export type ApiResponse = Record<string, any>;
+export type ApiResponse = Record<string, unknown>;
 
-export function callApi(method: string, url: string, path?: string, data?: any, token?: string) {
+export function callApi(method: string, url: string, path?: string, data?: unknown, token?: string) {
   const headers: HeadersInit = {
     "Accept": "application/json",
     "Content-Type": "application/json"

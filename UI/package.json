@@ -64,7 +64,10 @@
       "prettier/@typescript-eslint"
     ],
     "rules": {
-      "no-console": "warn"
+      "no-console": "warn",
+      "no-extra-boolean-cast": "warn",
+      "quotes": ["error", "double", { "avoidEscape": true }],
+      "@typescript-eslint/explicit-function-return-type": "off"
     }
   },
   "browserslist": {

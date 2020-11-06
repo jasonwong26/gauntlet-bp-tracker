@@ -20,7 +20,7 @@ interface CharacterFormData {
   class: string
 }
 
-const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL!;
+const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL || "";
 
 const buildCharacterTemplate = () => {
   const template: CharacterSummary = {

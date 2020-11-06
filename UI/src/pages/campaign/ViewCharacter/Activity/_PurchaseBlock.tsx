@@ -108,8 +108,8 @@ const PurchaseCustom: React.FC<CustomProps> = ({ balance, defaultActive = false,
   const [description, setDescription] = useState("");
   const [pointsInput, setPointsInput] = useState("");
 
-  const points: number = !!pointsInput ? Number(pointsInput) : 0;
-  const allowSubmit = !!description && !!points && (balance + points > 0);
+  const points: number = pointsInput ? Number(pointsInput) : 0;
+  const allowSubmit = description && !!points && (balance + points > 0);
   const btnSymbol = points < 0 ? "" : "+";
   const btnVariant = points < 0 ? "outline-danger" : "outline-success";
 
@@ -120,7 +120,7 @@ const PurchaseCustom: React.FC<CustomProps> = ({ balance, defaultActive = false,
   };
   const updatePoints: React.ChangeEventHandler<HTMLInputElement> = event => {
     const value = event.target.value;
-    const asPoints = !!value ? Number(value) : 0;
+    const asPoints = value ? Number(value) : 0;
     if(!Number.isInteger(asPoints) || asPoints < -10000 || asPoints > 10000) return;
     setPointsInput(value);
   };

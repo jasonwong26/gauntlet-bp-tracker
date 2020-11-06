@@ -17,7 +17,7 @@ interface Props {
   listService: CampaignListService
 }
 
-const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL!;
+const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL || "";
 const maxCampaignCharacters = 6;
 
 export const View: React.FC<Props> = ({ service, listService }) => (

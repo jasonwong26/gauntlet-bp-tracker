@@ -114,7 +114,7 @@ export const Container: React.FC<Props> = ({ service, listService, children }) =
 
   return (
     <LoadingByState status={loading}>
-      {children(campaign!, saving, onSave, onDelete, onCharacterSave, onCharacterDelete)}
+      {!!campaign && children(campaign, saving, onSave, onDelete, onCharacterSave, onCharacterDelete)}
       {redirect && (
         <Redirect to="/campaign/" />
       )}

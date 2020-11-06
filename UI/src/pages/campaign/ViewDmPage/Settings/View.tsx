@@ -197,7 +197,7 @@ const SettingEncounterForm: React.FC<SettingEncounterProps> = ({ encounter, onEd
 
   const updatePoints: React.ChangeEventHandler<HTMLInputElement> = event => {
     const value = event.target.value;
-    const asPoints = !!value ? Number(value) : 0;
+    const asPoints = value ? Number(value) : 0;
     if(!Number.isInteger(asPoints) || asPoints < -10000 || asPoints > 10000) return;
     setPointsInput(value);
   };
@@ -207,8 +207,8 @@ const SettingEncounterForm: React.FC<SettingEncounterProps> = ({ encounter, onEd
     onSubmit();
   };
   const onSubmit = () => {
-    const points: number = !!pointsInput ? Number(pointsInput) : 0;
-    const allowSubmit = !!points && points !== encounter.points;
+    const points: number = pointsInput ? Number(pointsInput) : 0;
+    const allowSubmit = points && points !== encounter.points;
     
     if(!allowSubmit) return;
 
@@ -327,7 +327,7 @@ const SettingItemForm: React.FC<SettingItemProps> = ({ item, onEdit }) => {
 
   const updatePoints: React.ChangeEventHandler<HTMLInputElement> = event => {
     const value = event.target.value;
-    const asPoints = !!value ? Number(value) : 0;
+    const asPoints = value ? Number(value) : 0;
     if(!Number.isInteger(asPoints) || asPoints < -10000 || asPoints > 10000) return;
     setPointsInput(value);
   };
@@ -337,7 +337,7 @@ const SettingItemForm: React.FC<SettingItemProps> = ({ item, onEdit }) => {
     onSubmit();
   };
   const onSubmit = () => {
-    const points: number = !!pointsInput ? Number(pointsInput) : 0;
+    const points: number = pointsInput ? Number(pointsInput) : 0;
     const allowSubmit = !!points && points !== item.points;
     
     if(!allowSubmit) return;

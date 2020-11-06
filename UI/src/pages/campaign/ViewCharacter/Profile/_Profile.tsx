@@ -12,7 +12,7 @@ interface Props {
   updateProfile?: (character: CharacterSummary) => void
 }
 
-const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL!;
+const defaultAvatarUrl = process.env.REACT_APP_DEFAULT_AVATAR_URL || "";
 
 export const CharacterProfile: React.FC<Props> = ({ character, saving, updateProfile }) => {
   const [isEditing, setIsEditing] = useState(false);

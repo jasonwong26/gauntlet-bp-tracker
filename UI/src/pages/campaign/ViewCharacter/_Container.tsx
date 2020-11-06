@@ -109,12 +109,14 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
   }, [campaign, character]);
 
   const updateProfile = (profile: CharacterSummary) => {
+    if(!character || !service) return;
+
     const saveTransaction = async () => {
       try {
-        const updated = {...character!, ...profile}; 
+        const updated = {...character, ...profile}; 
         setCharacter(updated);
         setSaveState(buildStatus(TransactionState.PENDING));
-        await service?.saveCharacter(profile);
+        await service.saveCharacter(profile);
         setSaveState(buildStatus(TransactionState.SUCCESS));  
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  
@@ -123,19 +125,23 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     saveTransaction();
   };
   const setEncounter = (encounter: Encounter) => {    
-    appService!.setEncounter(encounter);
-    const newState = appService!.getState();
+    if(!appService) return;
+
+    appService.setEncounter(encounter);
+    const newState = appService.getState();
     setAppState(newState);
   };
   const onPurchase = (item: PurchaseItem) => {
-    const purchased = appService!.onPurchase(item);
-    const newState = appService!.getState();
+    if(!appService || !service) return;
+
+    const purchased = appService.onPurchase(item);
+    const newState = appService.getState();
     setAppState(newState);
 
     const saveTransaction = async () => {
       try {
         setSaveState(buildStatus(TransactionState.PENDING));
-        await service?.addItem(characterId, purchased);
+        await service.addItem(characterId, purchased);
         setSaveState(buildStatus(TransactionState.SUCCESS));  
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  
@@ -144,14 +150,16 @@ export const Container: React.FC<Props> = ({ campaignId, characterId, children }
     saveTransaction();
   };
   const onRemove = (item: PurchasedItem) => {
-    appService!.onRemove(item);
-    const newState = appService!.getState();
+    if(!appService || !service) return;
+
+    appService.onRemove(item);
+    const newState = appService.getState();
     setAppState(newState);    
 
     const saveTransaction = async () => {
       try {
         setSaveState(buildStatus(TransactionState.PENDING));
-        await service?.removeItem(characterId, item);
+        await service.removeItem(characterId, item);
         setSaveState(buildStatus(TransactionState.SUCCESS));  
       } catch (err) {
         setSaveState(buildStatus(TransactionState.ERRORED, err));  

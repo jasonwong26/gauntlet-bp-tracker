@@ -3,8 +3,6 @@ import shortid from "shortid";
 import { CampaignSettings, Character, Encounter, PurchasedItem, PurchaseItem } from "../../../../types";
 import { AppState, HistoryItem, HistoryLevel, HistoryTier, PurchaseBlock } from "./_types";
 
-
-
 type GetBalance = (history: HistoryTier[], activeEncounter: Encounter) => number;
 
 export interface AppService {
@@ -43,15 +41,11 @@ export class CharacterAppService implements AppService {
   }
 
   public setEncounter = (encounter: Encounter) => {
-    // console.log(`Level changed to: ${encounter.level}`, encounter);
-
     const newEncounter = this.campaign.encounters.find(e => e.level === encounter.level);
     if(!newEncounter) return;
     this.activeEncounter = newEncounter;
   }
   public onPurchase = (item: PurchaseItem) => {
-    // console.log(`Purchased item: ${item.description}`, item);
-
     const purchasedItem = {
       ...item, 
       id: shortid.generate(),
@@ -64,18 +58,14 @@ export class CharacterAppService implements AppService {
       return purchasedItem.level < value.level;
     });
     if(index < 0) {
-      // console.log("appending...", {purchasedItem, index, history: this.character.history});
       this.character.history.push(purchasedItem);
     } else {
-      // console.log("inserting...", {purchasedItem, index, history: this.character.history});
       this.character.history.splice(index, 0, purchasedItem);  
     }
 
     return purchasedItem;
   }
   public onRemove = (item: PurchasedItem) => {
-    // console.log(`Removed item: ${item.description}`, item);
-
     const index = this.character.history.findIndex(value => {
       return item.id === value.id;
     });

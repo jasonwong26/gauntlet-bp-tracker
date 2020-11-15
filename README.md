@@ -12,14 +12,13 @@ The Gauntlet module uses provides a streamlined set of rules that focuses on a s
 
 ### Front End
 The front end is an SPA written in TypeScript 3.7 and React 16, scaffolded using the [create-react-app](https://github.com/facebook/create-react-app) package.  It utilizes Bootstap v4 and FontAwesome v4 for CSS and graphic frameworks.
-
-The front end is hosted on an AWS S3 bucket and distributed by CloudFront.
+It is hosted on an AWS S3 bucket and distributed by CloudFront.
 
 #### Choice of React for UI Framework
 I have used React for a few projects now, and find it's unidirectional data flow and focus on composition preferable to Angular's MVC architecture.
 React's popularity and robust ecosystem remain positive factors, with many resources and libraries available to leverage.
 
-I'd used [Redux](https://redux.js.org/) for a past project, and found that, while powerful, it felt cumbersome to work with and I felt I was writing a lot of boiler plate code.  
+I'd used [Redux](https://redux.js.org/) for a past project, and found that, while powerful, it felt cumbersome to work with and I felt I was writing a lot of boilerplate code.  
 This project provided an opportunity to try the new the new stateful functional components and the [hooks](https://reactjs.org/docs/hooks-intro.html) APIs as a replacement.
 
 ##### Lessons Learned
@@ -42,19 +41,60 @@ Creating a dedicated service class to manage state was well worth the investment
 After the API was scaffolded, the service provided an easy point to hook in the server transactions with existing logic.
 
 ### Back End
-The back end is a web socket API that calls Lambda methods with data stored in a DynamoDB document database.  All Lambda methods are written in TypeScript 3.7.  The API endpoints are defined by a [SAM](https://aws.amazon.com/serverless/sam/) document.
+The back end is a web socket API that calls Lambda methods with data stored in a DynamoDB document database.  
+All Lambda methods are written in TypeScript 3.7.  
+The API endpoints are defined by a [SAM](https://aws.amazon.com/serverless/sam/) document.
 
-#### Use of Typescript
-##### Tradeoffs / Decisions made
 #### Use of SAM
-##### Tradeoffs / Decisions made
+I chose to use the [SAM Framework](https://aws.amazon.com/serverless/sam/) for this project, an extension of CloudFormation that retains the YAML format but abstracts away much of the complexity.
+Having worked with [CloudFormation](https://aws.amazon.com/cloudformation/) direclty in the past, I found it quite difficult to work with.  
+Creating even a simple stack required hundreds of lines of YAML - definitions of each object, their relationship to others, creation of roles and permissions to bind them, etc.
+I was interested to see how well the SAM Framework would simplify the process for this project.
+
+##### Lessons Learned
+While SAM did effectively reduce the amount of YAML code I needed to write, I still found the SAM framework cumbersome.
+Each API endpoint required ~40 lines of code to represent, with lots of duplication of properties and settings.
+I also ran into limitations where SAM builds would fail due to resources that could be created, but not updated or deleted.
+I worked around these limitations by splitting off these resources to separate SAM templates (e.g. database tables and S3 buckets).
+
+I also ran into a quirk of the SAM framework where newly added API endpoints would build, and render as part of the API in the AWS Console, but would be unavailable on the API itself.
+I tracked this to a setting on the API Stage object:
+
+```YAML
+  Stage:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      AutoDeploy: true # default value: false
+```
+With this setting set to its default value, changes to an API definition will not be applied to an existing Stage, only newly created ones.
+This makes a lot of sense for Production APIs for ensuring backwards compatibility (eg. `/api/v1/{endpoint}`).
+However, the behaviour of completing the build successfully without issuing a warning that changes would not be applied meant a number of hours spent debugging to find and altering the above setting.
+Once this was applied, development pace was increased dramatically.
+
+Ultimately, while I found SAM to be an improvement over directly using CloudFormation I am not excited to use it in my next project.  I'm more inclined to use the [CDK Framework](https://docs.aws.amazon.com/cdk/latest/guide/home.html) instead, or look for other options.
+
 #### Websocket API
-##### Tradeoffs / Decisions made
-#### No Authentication Requirement
-##### Tradeoffs / Decisions made
-#### Use of DynamoDb vs RDBMS
-##### Tradeoffs / Decisions made
-#### Lessons Learned
+One of the key features I wanted to include in this project was a notification system.
+This would allow the DM and easily see player activity, and allow players to see each others'.
+Supporting this on an REST API would require frequent polling of an endpoint, but would be easily accommodated by a WebSocket API.
+And, since I had never used websockets before I thought this would be great project to give them a try.
+
+##### Lessons Learned
+AWS provides a great [variation](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api.html) on their API Gateway product that supports websockets.
+However, it is constrained by not being able to be integrated into an existing REST style API Gateway instance.
+Due to that limitation, I implemented ALL endpoints for this project using the same websocket API.
+
+This is not a choice I would make again.
+Subscribing to, listening for, and then unsubscribing to an event type just to handle a single round trip to the server (such as updating a character's name) was unnecessarily complicated on the client side.
+In my next project, I would instead spin up two API Gateway instances: a REST API to handle the majority of traffic, and a websocket API to handle bidirectional data.
+
+#### Use of DynamoDb for data storage
+- Chose document database over relational for flexibility
+- Small project scope & limited usage patterns made this 
+
+For this project, I chose to use a document database rather than a traditional relational database.
+Due to the small project scope and limited usage patterns, I thought this would be a good project to do so.
+I chose to use DynamoDb for this purpose.
 
 ### CI/CD
 
@@ -62,10 +102,10 @@ The back end is a web socket API that calls Lambda methods with data stored in a
 
 The project's development pipeline was generated using a [CDK](https://aws.amazon.com/cdk/) template, which uses CodePipeline, CodeBuild, and CloudFormation to trigger build, test, and deploy actions. 
 
-#### Use of CDK vs SAM / CloudFormation
-##### Tradeoffs / Decisions made
-#### No Authentication Requirement
-##### Tradeoffs / Decisions made
-#### Lessons Learned
+#### Use of CDK
+##### Lessons Learned
+
+#### Use of MonoRepo
+##### Lessons Learned
 
 ## TODO / Future Features

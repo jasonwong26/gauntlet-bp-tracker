@@ -88,24 +88,22 @@ This is not a choice I would make again.
 Subscribing to, listening for, and then unsubscribing to an event type just to handle a single round trip to the server (such as updating a character's name) was unnecessarily complicated on the client side.
 In my next project, I would instead spin up two API Gateway instances: a REST API to handle the majority of traffic, and a websocket API to handle bidirectional data.
 
-#### Use of DynamoDb for data storage
-- Chose document database over relational for flexibility
-- Small project scope & limited usage patterns made this 
-
-For this project, I chose to use a document database rather than a traditional relational database.
-Due to the small project scope and limited usage patterns, I thought this would be a good project to do so.
-I chose to use DynamoDb for this purpose.
-
 ### CI/CD
 
 ![Pipeline_Architecture](Documentation/Pipeline_Architecture.jpg)
 
-The project's development pipeline was generated using a [CDK](https://aws.amazon.com/cdk/) template, which uses CodePipeline, CodeBuild, and CloudFormation to trigger build, test, and deploy actions. 
+The project's development pipeline was generated using a [CDK](https://aws.amazon.com/cdk/) template, which uses [CodePipeline](https://aws.amazon.com/codepipeline/), [CodeBuild](https://aws.amazon.com/codebuild/), and [CloudFormation](https://aws.amazon.com/cloudformation/) to trigger builds and deploy changes.
+
+The pipeline is hooked into this GitHub repository via an OAuth secured webhook.  Builds are triggered on push to the Staging and Production branches.
 
 #### Use of CDK
-##### Lessons Learned
+I found that CDK was more comfortable than SAM for managing templates.  
+The ability create my own data structures made replicating and parameterizing the build process for Production and Staging much simpler than my experience of SAM.
 
-#### Use of MonoRepo
-##### Lessons Learned
+For future projects I expect I will be leaning more on the CDK framework than SAM for managing infrastructure.
+That said, the Pipeline right now acts as scaffold for building two SAM stacks - building out an equivalently complicated stack as done for the API may involve just as much boilerplate in CDK as it does in SAM.
 
 ## TODO / Future Features
+- A set of cron jobs for gathering usage analytics
+- A simplified workflow for creating characters and campaigns via import from [DndBeyond](https://www.dndbeyond.com)
+- Expanded customizations for campaign settings

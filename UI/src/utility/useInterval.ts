@@ -11,7 +11,7 @@ type Handler = (...args: unknown[]) => void;
  * @version 16.8.0
  * @see https://reactjs.org/docs/hooks-reference.html#useeffect
  */
-export function useInterval(callback: Handler, delay: number) {
+export function useInterval(callback: Handler, delay: number) : void {
   const savedCallback = useRef<Handler>();
 
   // Remember the latest callback.

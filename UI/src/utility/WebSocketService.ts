@@ -47,7 +47,7 @@ export class WebSocketService implements SocketService {
     this.listeners = new Map<string, EventHandler[]>();
   }
 
-  public isConnected = () => {
+  public isConnected = () : boolean => {
     return !!this.socket && this.socket.readyState === SocketState.OPEN;
   }
 

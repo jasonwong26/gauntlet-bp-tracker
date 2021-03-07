@@ -41,11 +41,11 @@ export class CampaignStorageService {
     this.service = new WebSocketService(endpoint);
   }
 
-  public isConnected = () => {
+  public isConnected = () : boolean => {
     return this.service.isConnected();
   }
 
-  public connect = async (campaign?: string) => {
+  public connect = async (campaign?: string) : Promise<void> => {
     await this.service.connect();
     
     if(!campaign) return;
@@ -56,7 +56,7 @@ export class CampaignStorageService {
     const input = { action: actions.subscribe, campaign };
     return await this.executeAction(input);
   }
-  executeAction = async <T extends BaseInput>(input: T) => {
+  executeAction = async <T extends BaseInput>(input: T) : Promise<void> => {
     const successPromise = new Promise<void>((resolve, reject) => {
       const eventHook: EventHandler = () => {
         try {
@@ -78,19 +78,19 @@ export class CampaignStorageService {
     await this.service.send(input);
     return await Promise.race([successPromise, errorPromise]);
   }
-  sleep = async <T>(ms: number, fn: Function, ...args: unknown[]) => {
+  sleep = async <T>(ms: number, fn: (...args: unknown[]) => T, ...args: unknown[]) : Promise<T> => {
     await this.timeout(ms);
     return fn(...args) as T;
   }
-  timeout = (ms: number) => {
+  timeout = (ms: number) : Promise<unknown> => {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  public unsubscribeFromCampaign = async (campaign = this.id) => {
+  public unsubscribeFromCampaign = async (campaign = this.id) : Promise<void> => {
     const input = { action: actions.unsubscribe, campaign };
     return await this.executeAction(input);
   }
 
-  public subscribeToAlerts = async (handler: SuccessHandler<Notification>) => {
+  public subscribeToAlerts = async (handler: SuccessHandler<Notification>) : Promise<void> => {
     await this.service.subscribe("additemalert", event => {    
       const alert = event as unknown as PurchaseAlert;
       const action = alert.item.points > 0 ? "earned" : "purchased";
@@ -114,7 +114,7 @@ export class CampaignStorageService {
     });
   }
 
-  public getCampaign = async (campaign = this.id) => {
+  public getCampaign = async (campaign = this.id) : Promise<Campaign> => {
     const input = { action: actions.getCampaign, campaign };
     const mapper: EventMapper<Campaign> = event => {
       const { campaign } = event;
@@ -123,7 +123,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  executeFunction = async <Tinput extends BaseInput, Toutput>(input: Tinput, mapper: EventMapper<Toutput>) => {
+  executeFunction = async <Tinput extends BaseInput, Toutput>(input: Tinput, mapper: EventMapper<Toutput>) : Promise<Toutput> => {
     const successPromise = new Promise<Toutput>((resolve, reject) => {
       const eventHook: EventHandler = event => {
         try {
@@ -148,7 +148,7 @@ export class CampaignStorageService {
     await this.service.send(input);
     return await Promise.race([successPromise, errorPromise]);
   }
-  public createCampaign = async (campaign: Campaign) => {
+  public createCampaign = async (campaign: Campaign) : Promise<Campaign> => {
     const input = { action: actions.createCampaign, campaign };
     const mapper: EventMapper<Campaign> = event => {
       const { campaign } = event;
@@ -157,7 +157,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public updateCampaign = async (campaign: Campaign) => {
+  public updateCampaign = async (campaign: Campaign) : Promise<Campaign> => {
     const input = { action: actions.updateCampaign, campaign: campaign.id, metadata: campaign };
     const mapper: EventMapper<Campaign> = event => {
       const { metadata: campaign } = event;
@@ -166,7 +166,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public deleteCampaign = async (campaign: Campaign) => {
+  public deleteCampaign = async (campaign: Campaign) : Promise<string> => {
     const input = { action: actions.deleteCampaign, campaign: campaign.id };
     const mapper: EventMapper<string> = event => {
       const { status } = event;
@@ -175,7 +175,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public getSettings = async (campaign = this.id) => {
+  public getSettings = async (campaign = this.id) : Promise<CampaignSettings> => {
     const input = { action: actions.getSettings, campaign };
     const mapper: EventMapper<CampaignSettings> = event => {
       const { settings } = event;
@@ -184,7 +184,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public saveSettings = async (settings: CampaignSettings, campaign = this.id) => {
+  public saveSettings = async (settings: CampaignSettings, campaign = this.id) : Promise<CampaignSettings> => {
     const input = { action: actions.saveSettings, campaign, settings };
     const mapper: EventMapper<CampaignSettings> = event => {
       const { settings } = event;
@@ -194,7 +194,7 @@ export class CampaignStorageService {
     return await this.executeFunction(input, mapper);
   }
 
-  public getCharacter = async (id: string, campaign = this.id) => {
+  public getCharacter = async (id: string, campaign = this.id) : Promise<Character> => {
     const input = { action: actions.getCharacter, campaign, character: id };
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
@@ -203,7 +203,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public saveCharacter = async (character: CharacterSummary, campaign = this.id) => {
+  public saveCharacter = async (character: CharacterSummary, campaign = this.id) : Promise<CharacterSummary> => {
     const input = { action: actions.saveCharacter, campaign, character };
     const mapper: EventMapper<CharacterSummary> = event => {
       const { character } = event;
@@ -212,7 +212,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public deleteCharacter = async (character: CharacterSummary, campaign = this.id) => {
+  public deleteCharacter = async (character: CharacterSummary, campaign = this.id) : Promise<CharacterSummary> => {
     const input = { action: actions.deleteCharacter, campaign, character };
     const mapper: EventMapper<CharacterSummary> = event => {
       const { character, status } = event;
@@ -226,7 +226,7 @@ export class CampaignStorageService {
     return await this.executeFunction(input, mapper);
   }
 
-  public getNotifications = async (request: AlertRequest, campaign = this.id) => {
+  public getNotifications = async (request: AlertRequest, campaign = this.id) : Promise<PurchaseAlert[]> => {
     const input = { action: actions.getNotifications, campaign, ...request };
     const mapper: EventMapper<PurchaseAlert[]> = event => {
       const { alerts } = event;
@@ -236,7 +236,7 @@ export class CampaignStorageService {
     return await this.executeFunction(input, mapper);
   }
 
-  public addItem = async (characterId: string, item: PurchasedItem, campaign = this.id) => {
+  public addItem = async (characterId: string, item: PurchasedItem, campaign = this.id) : Promise<Character> => {
     const input = { action: actions.addItem, campaign, character: characterId, item };
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
@@ -245,7 +245,7 @@ export class CampaignStorageService {
 
     return await this.executeFunction(input, mapper);
   }
-  public removeItem = async (characterId: string, item: PurchasedItem, campaign = this.id) => {    
+  public removeItem = async (characterId: string, item: PurchasedItem, campaign = this.id) : Promise<Character> => {    
     const input = { action: actions.removeItem, campaign, character: characterId, item };
     const mapper: EventMapper<Character> = event => {
       const { character } = event;
@@ -255,7 +255,7 @@ export class CampaignStorageService {
     return await this.executeFunction(input, mapper);
   }
 
-  public disconnect = async () => {
+  public disconnect = async () : Promise<void> => {
     this.service.onDisconnect(event => {
       console.log("...disconnected.", { event });
     });

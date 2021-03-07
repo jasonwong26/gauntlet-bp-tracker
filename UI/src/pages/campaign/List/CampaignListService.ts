@@ -8,11 +8,11 @@ export class CampaignListService {
     this.service = service;
   }
 
-  getListKey = () => {
+  getListKey = () : string => {
     return "campaigns-list";
   }
 
-  public list = async () => {
+  public list = async () : Promise<CampaignSummary[]> => {
     const key = this.getListKey();
     let list = await this.service.fetch<CampaignSummary[]>(key);
 
@@ -23,18 +23,18 @@ export class CampaignListService {
 
     return list;
   }
-  private saveList = async(items: CampaignSummary[]) => {
+  private saveList = async(items: CampaignSummary[]) : Promise<void> => {
     const key = this.getListKey();
     await this.service.save(key, items);
   }
   
-  public exists = async (id: string) => {
+  public exists = async (id: string) : Promise<boolean> => {
     const item = await this.get(id);
 
     return !!item;
   }
   
-  public get = async (id: string) => {
+  public get = async (id: string) : Promise<CampaignSummary | null> => {
     const list = await this.list();
     const index = list.findIndex(value => value.id === id);
 
@@ -42,7 +42,7 @@ export class CampaignListService {
     return list[index];
   }
 
-  public add = async (item: Campaign) => {
+  public add = async (item: Campaign) : Promise<void> => {
     const { id, title, author } = item;
     const summary: CampaignSummary = { id, title, author }; 
 
@@ -55,7 +55,7 @@ export class CampaignListService {
     await this.saveList(appended);
   }
 
-  remove = async(id: string) => {
+  remove = async(id: string) : Promise<void> => {
     const list = await this.list();
     const index = list.findIndex(value => value.id === id);
 

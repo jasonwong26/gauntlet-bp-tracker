@@ -15,7 +15,7 @@ export interface TransactionStatus {
   error?: string | Error
 }
 
-export const buildStatus = (state: TransactionState, error?: string | Error) => {
+export const buildStatus = (state: TransactionState, error?: string | Error) : TransactionStatus => {
   const status: TransactionStatus = {
     state,
     isInactive: state === TransactionState.INACTIVE,

@@ -40,13 +40,13 @@ export class CharacterAppService implements AppService {
     return defaultEncounter;
   }
 
-  public setEncounter = (encounter: Encounter) => {
+  public setEncounter = (encounter: Encounter) : void => {
     const newEncounter = this.campaign.encounters.find(e => e.level === encounter.level);
     if(!newEncounter) return;
     this.activeEncounter = newEncounter;
   }
-  public onPurchase = (item: PurchaseItem) => {
-    const purchasedItem = {
+  public onPurchase = (item: PurchaseItem) : PurchasedItem => {
+    const purchasedItem : PurchasedItem = {
       ...item, 
       id: shortid.generate(),
       tier: this.activeEncounter.tier,
@@ -65,14 +65,14 @@ export class CharacterAppService implements AppService {
 
     return purchasedItem;
   }
-  public onRemove = (item: PurchasedItem) => {
+  public onRemove = (item: PurchasedItem) : void => {
     const index = this.character.history.findIndex(value => {
       return item.id === value.id;
     });
     this.character.history.splice(index, 1);
   }
 
-  public getState = () => {
+  public getState = () : AppState | undefined => {
     if(!this.campaign || !this.character) return undefined;
 
     const history = this.buildHistory();
@@ -127,7 +127,7 @@ export class CharacterAppService implements AppService {
 
     return history;
   }
-  buildTransactionMap = (character: Character) => {
+  buildTransactionMap = (character: Character) : Map<number, HistoryItem[]> => {
     const map = new Map<number, HistoryItem[]>();
     let balance = 0;
     character.history.forEach(t => {
@@ -239,7 +239,7 @@ export class CharacterAppService implements AppService {
       items: [...this.campaign.magic]
     };
   }
-  public getCharacter = () => {
+  public getCharacter = () : Character => {
     const history = [...this.character.history];
     return {...this.character, history};
   }

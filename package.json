@@ -15,6 +15,6 @@
   "homepage": "https://github.com/jasonwong26/gauntlet-bp-tracker#readme",
   "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^26.0.15"
+    "@types/jest": "^26.0.20"
   }
 }

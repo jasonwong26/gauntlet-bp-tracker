@@ -1,4 +1,5 @@
 import { DynamoDB, AWSError } from "aws-sdk";
+import { ServiceConfigurationOptions } from "aws-sdk/lib/service";
 
 // ReadOnly Input/Output
 export type GetItemInput = DynamoDB.DocumentClient.GetItemInput;
@@ -27,7 +28,7 @@ export type DeleteItemOutput = DynamoDB.DocumentClient.DeleteItemOutput;
 export type BatchWriteItemInput = DynamoDB.DocumentClient.BatchWriteItemInput;
 export type BatchWriteItemOutput = DynamoDB.DocumentClient.BatchWriteItemOutput;
 
-export type DbOptions = (DynamoDB.DocumentClient.DocumentClientOptions & DynamoDB.ClientApiVersions) | undefined;
+export type DbOptions = (DynamoDB.DocumentClient.DocumentClientOptions & ServiceConfigurationOptions & DynamoDB.ClientApiVersions) | undefined;
 
 export class DbError extends Error {
   public innerError: Error;

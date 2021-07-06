@@ -8,7 +8,7 @@
       "envFile": "${workspaceFolder}/api/.env",
       "runtimeArgs": [
         "--inspect-brk", 
-        "${workspaceRoot}/api/node_modules/.bin/jest", 
+        "${workspaceRoot}/api/node_modules/.bin/jest.js", 
         "--runInBand",
         "--config",
         "${workspaceRoot}/api/jestconfig.json"
